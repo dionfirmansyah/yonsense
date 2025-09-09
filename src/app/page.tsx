@@ -1,7 +1,6 @@
 'use client';
 
 import { useAuth } from '@/components/auth/AuthProvider';
-import { LoginButton } from '@/components/auth/LoginButton';
 import { Button } from '@/components/ui/button';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { usePushSubcriptions } from '@/hooks/yonsense/usePushSubcriptions';
@@ -67,22 +66,6 @@ export default function Home() {
 
     return (
         <div className="min-h-screen bg-gray-100">
-            <header className="bg-white shadow">
-                <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-6 sm:px-6 lg:px-8">
-                    <h1 className="text-3xl font-bold text-gray-900">Push Notification Demo</h1>
-                    {user ? (
-                        <div className="flex items-center space-x-4">
-                            <span className="text-gray-700">Hello, {currentProfile?.displayName || 'User'}</span>
-                            <Button onClick={logout} variant="outline">
-                                Logout
-                            </Button>
-                        </div>
-                    ) : (
-                        <LoginButton />
-                    )}
-                </div>
-            </header>
-
             <main className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
                 {user ? (
                     <div className="space-y-6">
