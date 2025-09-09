@@ -170,7 +170,6 @@ export default function Home() {
                     <div className="py-12 text-center">
                         <h2 className="mb-4 text-2xl font-bold text-gray-900">Welcome to Push Notification Demo</h2>
                         <p className="mb-6 text-gray-600">Please login to manage push notifications</p>
-                        <LoginButton />
                     </div>
                 )}
             </main>
