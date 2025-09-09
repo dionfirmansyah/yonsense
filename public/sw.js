@@ -44,6 +44,7 @@ self.addEventListener('push', (event) => {
         data = {},
         actions = [],
         requireInteraction = false,
+        tag = Date.now().toString(),
     } = notificationData;
 
     const notificationOptions = {
@@ -51,6 +52,7 @@ self.addEventListener('push', (event) => {
         icon,
         badge,
         data,
+        tag,
         actions,
         requireInteraction,
         renotify: true,
