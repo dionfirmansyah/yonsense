@@ -12,10 +12,12 @@ interface PushData {
 // Set VAPID details (gunakan env.ts biar konsisten)
 webpush.setVapidDetails('mailto:admin@yourdomain.com', env.vapidPublicKey!, process.env.VAPID_PRIVATE_KEY!);
 
-export async function POST(req: NextRequest, context: { params: { id: string } }) {
+export async function POST(req: NextRequest, { params }: any) {
     try {
         const { title, body } = (await req.json()) as PushData;
-        const userId = context.params.id;
+
+        const { id } = params;
+        const userId = id;
 
         // ambil semua subscription aktif
         const data = await dbAdmin.query({
