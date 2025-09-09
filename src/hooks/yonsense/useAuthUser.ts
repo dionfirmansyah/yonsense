@@ -27,8 +27,8 @@ export const useAuthUser = () => {
         },
     });
 
-    const currentProfile = useMemo(() => CurrentProfile?.profiles?.[0], [CurrentProfile?.profiles, user]);
-    const allProfiles = useMemo(() => AllProfiles?.profiles, [AllProfiles?.profiles, user]);
+    const currentProfile = useMemo(() => CurrentProfile?.profiles?.[0], [CurrentProfile?.profiles]);
+    const allProfiles = useMemo(() => AllProfiles?.profiles, [AllProfiles?.profiles]);
 
     const updateProfile = useCallback(
         async (updates: ProfileUpdate): Promise<void> => {
