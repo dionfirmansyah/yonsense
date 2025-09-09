@@ -10,10 +10,12 @@ import {
     DropdownMenuSeparator,
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { useAuth } from './AuthProvider';
 
 export function UserProfile() {
-    const { user, logout } = useAuth();
+    const { logout } = useAuth();
+    const { user, currentProfile } = useAuthUser();
 
     if (!user) return null;
 
@@ -30,10 +32,10 @@ export function UserProfile() {
             <DropdownMenuTrigger asChild>
                 <Button variant="ghost" className="relative h-8 w-8 rounded-full">
                     <Avatar className="h-8 w-8">
-                        {user.picture ? (
-                            <AvatarImage src={user.picture} alt={user.name || 'User'} />
+                        {currentProfile?.picture ? (
+                            <AvatarImage src={currentProfile.picture} alt={currentProfile.displayName || 'User'} />
                         ) : (
-                            <AvatarFallback>{getInitials(user.name || 'U')}</AvatarFallback>
+                            <AvatarFallback>{getInitials(currentProfile?.displayName || 'U')}</AvatarFallback>
                         )}
                     </Avatar>
                 </Button>
@@ -41,8 +43,8 @@ export function UserProfile() {
             <DropdownMenuContent className="w-56" align="end" forceMount>
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm leading-none font-medium">{user.name}</p>
-                        <p className="text-muted-foreground text-xs leading-none">{user.email}</p>
+                        <p className="text-sm leading-none font-medium">{currentProfile?.displayName}</p>
+                        <p className="text-muted-foreground text-xs leading-none">{currentProfile?.email}</p>
                     </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
