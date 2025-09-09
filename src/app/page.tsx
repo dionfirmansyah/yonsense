@@ -69,26 +69,6 @@ export default function Home() {
             <main className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
                 {user ? (
                     <div className="space-y-6">
-                        <div className="overflow-hidden rounded-lg bg-white shadow">
-                            <div className="px-4 py-5 sm:p-6">
-                                <h2 className="mb-4 text-lg font-medium text-gray-900">Send Test Notifications</h2>
-                                <div className="flex space-x-4">
-                                    <Button
-                                        onClick={async () => {
-                                            try {
-                                                await sendToAllUsers();
-                                                toast.success('Notification sent to all users');
-                                            } catch (error) {
-                                                toast.error('Failed to send notification');
-                                            }
-                                        }}
-                                    >
-                                        Send to All Users
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
-
                         <div className="overflow-hidden bg-white shadow sm:rounded-lg">
                             <div className="px-4 py-5 sm:px-6">
                                 <h3 className="text-lg leading-6 font-medium text-gray-900">
@@ -105,9 +85,7 @@ export default function Home() {
                                             <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                                                 Name
                                             </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                                                Push Subscription
-                                            </th>
+
                                             <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
                                                 Action
                                             </th>
@@ -122,9 +100,7 @@ export default function Home() {
                                                 <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-gray-900">
                                                     {sub.name}
                                                 </td>
-                                                <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
-                                                    {sub.pushSubscription ? '✅ Active' : '❌ Inactive'}
-                                                </td>
+
                                                 <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
                                                     <Button
                                                         variant="outline"
@@ -146,6 +122,26 @@ export default function Home() {
                                         ))}
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+
+                        <div className="overflow-hidden rounded-lg bg-white shadow">
+                            <div className="px-4 py-5 sm:p-6">
+                                <h2 className="mb-4 text-lg font-medium text-gray-900">Send Test Notifications</h2>
+                                <div className="flex space-x-4">
+                                    <Button
+                                        onClick={async () => {
+                                            try {
+                                                await sendToAllUsers();
+                                                toast.success('Notification sent to all users');
+                                            } catch (error) {
+                                                toast.error('Failed to send notification');
+                                            }
+                                        }}
+                                    >
+                                        Send to All Users
+                                    </Button>
+                                </div>
                             </div>
                         </div>
                     </div>
