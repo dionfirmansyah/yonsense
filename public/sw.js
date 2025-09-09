@@ -41,7 +41,6 @@ self.addEventListener('push', (event) => {
         body = 'You have a new message',
         icon = '/icon-192x192.png',
         badge = '/badge.png',
-        tag = 'default',
         data = {},
         actions = [],
         requireInteraction = false,
@@ -51,10 +50,10 @@ self.addEventListener('push', (event) => {
         body,
         icon,
         badge,
-        tag,
         data,
         actions,
         requireInteraction,
+        renotify: true,
         vibrate: [200, 100, 200], // Optional: vibration pattern
     };
 
