@@ -15,7 +15,7 @@ self.addEventListener('activate', (event) => {
 
 // Handle push notifications
 self.addEventListener('push', (event) => {
-    console.log('Push notification received:', event);
+    // console.log('Push notification received:', event);
     
     let notificationData = {};
     

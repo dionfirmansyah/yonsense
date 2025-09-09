@@ -44,14 +44,14 @@ export default function Home() {
         }
     }
 
-    async function sendToUser(userId: string) {
+    async function sendToUser(userId: string, userName: string) {
         try {
             const res = await fetch(`/api/push/${userId}`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    title: `Test Notif untuk id: ${userId} 🎉`,
-                    body: 'Halo, ini notifikasi dari Next.js + InstantDB!',
+                    title: `Test Notif untuk id: ${userName} 🎉`,
+                    body: `Halo, ini notifikasi dari ${currentProfile?.displayName}`,
                 }),
             });
 
@@ -107,7 +107,7 @@ export default function Home() {
                                                         size="sm"
                                                         onClick={async () => {
                                                             try {
-                                                                await sendToUser(sub.userId);
+                                                                await sendToUser(sub.userId, sub.name);
                                                                 toast.success(`Notification sent to ${sub.name}`);
                                                             } catch (error) {
                                                                 toast.error(`Failed to send to ${sub.name}`);
