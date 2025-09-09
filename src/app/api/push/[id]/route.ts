@@ -1,3 +1,4 @@
+// src/app/api/push/[id]/route.ts
 import { dbAdmin } from '@/lib/db';
 import { env } from '@/lib/env';
 import { NextRequest, NextResponse } from 'next/server';
@@ -8,14 +9,19 @@ interface PushData {
     body: string;
 }
 
-// Set VAPID details
-webpush.setVapidDetails('mailto:admin@yourdomain.com', env.vapidPublicKey!, process.env.VAPID_PRIVATE_KEY!);
+// Set VAPID details (gunakan env.ts biar konsisten)
+webpush.setVapidDetails(
+    'mailto:admin@yourdomain.com',
+    env.vapidPublicKey!,
+    process.env.VAPID_PRIVATE_KEY!, // jangan campur process.env langsung
+);
 
 export async function POST(req: NextRequest, { params }: { params: { id: string } }) {
     try {
         const { title, body } = (await req.json()) as PushData;
         const userId = params.id;
 
+        // ambil semua subscription aktif
         const data = await dbAdmin.query({
             subscriptions: {
                 $: {
@@ -36,16 +42,22 @@ export async function POST(req: NextRequest, { params }: { params: { id: string 
             badge: '/badge.png',
         });
 
-        // Send to all matching subscriptions
+        // kirim notifikasi ke semua subscription
         await Promise.all(
             subscriptions.map(async (sub: any) => {
                 try {
-                    const pushSubscription: PushSubscription = JSON.parse(sub.pushSubscriptions);
+                    // kalau field di DB berupa string, parse
+                    const pushSubscription: PushSubscription =
+                        typeof sub.pushSubscriptions === 'string'
+                            ? JSON.parse(sub.pushSubscriptions)
+                            : sub.pushSubscriptions;
+
                     await webpush.sendNotification(pushSubscription, payload);
                 } catch (err) {
                     const error = err as { statusCode?: number; body?: unknown };
                     console.error('Push error:', error?.body || error);
 
+                    // hapus subscription yang invalid (404 / 410)
                     if (error.statusCode === 410 || error.statusCode === 404) {
                         await dbAdmin.transact([dbAdmin.tx.subscriptions[sub.id].delete()]);
                     }
