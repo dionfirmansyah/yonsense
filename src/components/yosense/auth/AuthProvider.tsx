@@ -5,10 +5,7 @@ import { db } from '@/lib/db';
 import { env } from '@/lib/env';
 import { generateNonce, parseIdToken } from '@/lib/utils';
 import { GoogleOAuthProvider } from '@react-oauth/google';
-import { LogOut } from 'lucide-react';
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
-import { Button } from '../ui/button';
-import { NotificationBell } from '../ui/NotificationBell';
 import LoginModal from './LoginModal';
 
 // Context
@@ -127,7 +124,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     return (
         <AuthContext.Provider value={contextValue}>
             <GoogleOAuthProvider clientId={process.env.NEXT_PUBLIC_GOOGLE_CLIENT!}>
-                <header className="border-b">
+                {/* <header className="border-b">
                     <div className="container flex h-16 items-center justify-between px-4">
                         <h1 className="text-xl font-bold">Yonsense</h1>
                         <div className="flex items-center gap-4">
@@ -173,7 +170,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                             )}
                         </div>
                     </div>
-                </header>
+                </header> */}
 
                 {children}
                 {showLogin && (

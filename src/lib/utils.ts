@@ -22,3 +22,14 @@ export const createDisplayName = (authUser: JWTPayload): string => {
     const fullName = `${authUser.given_name || ''} ${authUser.family_name || ''}`.trim();
     return fullName || 'User';
 };
+
+export const createInitial = (displayName: string | undefined): string => {
+    if (!displayName) return 'U';
+    const initial = displayName
+        .split(' ')
+        .map((i) => i[0])
+        .join('')
+        .toUpperCase();
+
+    return initial;
+};

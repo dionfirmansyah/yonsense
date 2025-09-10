@@ -1,7 +1,7 @@
 'use client';
 
-import { useAuth } from '@/components/auth/AuthProvider';
 import { Button } from '@/components/ui/button';
+import { useAuth } from '@/components/yosense/auth/AuthProvider';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { usePushSubcriptions } from '@/hooks/yonsense/usePushSubcriptions';
 import { toast } from 'sonner';
