@@ -15,55 +15,62 @@ self.addEventListener('activate', (event) => {
 
 // Handle push notifications
 self.addEventListener('push', (event) => {
-    // console.log('Push notification received:', event);
-    
-    let notificationData = {};
-    
+    let data = {};
     try {
-        // Try to parse data from push event
-        if (event.data) {
-            notificationData = event.data.json();
-        }
-    } catch (error) {
-        console.error('Error parsing push data:', error);
-        // Fallback notification data
-        notificationData = {
-            title: 'New Notification',
-            body: 'You have a new message',
-            icon: '/icon-192x192.png',
-            badge: '/badge.png',
-        };
+      data = event.data?.json() || {};
+    } catch {
+      data = {};
     }
-    
-    // Set default values
-    const {
-        title = 'New Notification',
-        body = 'You have a new message',
-        icon = '/icon-192x192.png',
-        badge = '/badge.png',
-        data = {},
-        actions = [],
-        requireInteraction = false,
-        tag = Date.now().toString(),
-    } = notificationData;
-
-    const notificationOptions = {
-        body,
-        icon,
-        badge,
-        data,
-        tag,
-        actions,
-        requireInteraction,
-        renotify: true,
-        vibrate: [200, 100, 200], // Optional: vibration pattern
+  
+    const title = data.title || 'New Notification';
+    const options = {
+      body: data.body || 'You have a new message',
+      icon: data.icon || '/yon-light-logo.svg',
+      badge: data.badge || '/badge.png',
+      data: { url: data.url || '/' },
+      vibrate: [200, 100, 200],
+      actions: [
+        {
+          action: 'open',
+          title: 'Open',
+        },
+        {
+          action: 'close',
+          title: '✖ Close',
+        },
+      ],
     };
-
-    event.waitUntil(
-        self.registration.showNotification(title, notificationOptions)
-    );
-});
-
+  
+    event.waitUntil(self.registration.showNotification(title, options));
+  });
+  
+  self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+  
+    if (event.action === 'close') {
+      // User klik tombol "Close"
+      console.log('User closed the notification manually.');
+      return;
+    }
+  
+    if (event.action === 'open' || !event.action) {
+      // Default behavior: buka URL
+      const urlToOpen = event.notification.data.url;
+      event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientsArr) => {
+          for (const client of clientsArr) {
+            if (client.url === urlToOpen && 'focus' in client) {
+              return client.focus();
+            }
+          }
+          if (clients.openWindow) {
+            return clients.openWindow(urlToOpen);
+          }
+        })
+      );
+    }
+  });
+  
 // Handle notification clicks
 self.addEventListener('notificationclick', (event) => {
     console.log('Notification clicked:', event);

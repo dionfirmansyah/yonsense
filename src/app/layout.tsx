@@ -6,6 +6,15 @@ import { AuthProvider } from '@/components/yosense/auth/AuthProvider';
 
 import './globals.css';
 
+export const MetaData = {
+    title: 'Yonsense',
+    icons: {
+        icon: '/favicon.ico',
+        shortcut: '/favicon-16x16.png',
+        apple: '/apple-touch-icon.png',
+    },
+};
+
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en" suppressHydrationWarning={true}>
@@ -14,7 +23,6 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                     <div className="flex min-h-screen flex-col">
                         <main className="flex-1">{children}</main>
                     </div>
-
                     <Toaster richColors position="top-center" />
                 </AuthProvider>
             </body>
