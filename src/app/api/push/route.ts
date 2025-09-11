@@ -7,17 +7,15 @@ import webpush, { PushSubscription } from 'web-push';
 interface PushData {
     title: string;
     body: string;
+    userId: string;
 }
 
 // Set VAPID details (gunakan env.ts biar konsisten)
 webpush.setVapidDetails('mailto:admin@yourdomain.com', env.vapidPublicKey!, process.env.VAPID_PRIVATE_KEY!);
 
-export async function POST(req: NextRequest, { params }: any) {
+export async function POST(req: NextRequest) {
     try {
-        const { title, body } = (await req.json()) as PushData;
-
-        const { id } = params;
-        const userId = id;
+        const { title, body, userId } = (await req.json()) as PushData;
 
         // ambil semua subscription aktif
         const data = await dbAdmin.query({

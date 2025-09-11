@@ -2,7 +2,7 @@
 
 import * as React from 'react';
 
-import { SidebarInset, SidebarTrigger } from '@/components/ui/sidebar';
+import { SidebarInset } from '@/components/ui/sidebar';
 
 import { BadgeCheck, Bell, ChevronDown, CreditCard, LogOut, Search, Settings, Sparkles } from 'lucide-react';
 
@@ -25,28 +25,28 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { cn, createInitial } from '@/lib/utils';
 import { toast } from 'sonner';
+import { LoginButton } from '../auth/LoginButton';
 
 export default function SidebarContent({ children, className }: React.ComponentProps<'div'>) {
     const isMobile = useIsMobile();
-    const { currentProfile } = useAuthUser();
+    const { currentProfile, user } = useAuthUser();
+
     return (
         <SidebarInset>
             <header className="flex h-16 shrink-0 items-center justify-between gap-2 transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-12">
-                <div className="flex items-center gap-2 px-4">
-                    <SidebarTrigger className="-ml-1">
-                        <Avatar className="h-8 w-8 rounded-lg">
-                            <AvatarImage src={currentProfile?.picture} alt={currentProfile?.displayName} />
-                            <AvatarFallback className="rounded-lg">
-                                {createInitial(currentProfile?.displayName)}
-                            </AvatarFallback>
-                        </Avatar>
-                    </SidebarTrigger>
+                <div className="flex items-center gap-2">
                     <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                             <SidebarMenuButton
                                 size="lg"
                                 className="data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground"
                             >
+                                <Avatar className="h-8 w-8 rounded-lg">
+                                    <AvatarImage src={currentProfile?.picture} alt={currentProfile?.displayName} />
+                                    <AvatarFallback className="rounded-lg">
+                                        {createInitial(currentProfile?.displayName)}
+                                    </AvatarFallback>
+                                </Avatar>
                                 <div className="grid flex-1 text-left text-sm leading-tight">
                                     <span className="truncate font-medium">{currentProfile?.displayName}</span>
                                     <span className="truncate text-xs">{currentProfile?.email}</span>
@@ -120,6 +120,7 @@ export default function SidebarContent({ children, className }: React.ComponentP
                             </Button>
                         </>
                     )}
+                    {!user && <LoginButton />}
                 </div>
             </header>
             <div className={cn('flex flex-col gap-2 p-2', className)}>{children}</div>
