@@ -22,7 +22,7 @@ interface NotificationData {
 interface UserProfile {
     id: string;
     userId: string;
-    displayName: string;
+    displayName?: string | undefined;
     email: string;
     status?: 'online' | 'offline' | 'away';
     lastSeen?: string;
@@ -200,14 +200,6 @@ const PushNotificationManager: React.FC = () => {
     }, [handleSendNotification, selectedUsers]);
 
     // Render helpers
-    const renderUserAvatar = useCallback(
-        (user: UserProfile) => (
-            <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
-                <span className="text-sm font-medium text-blue-600">{createInitial(user.displayName)}</span>
-            </div>
-        ),
-        [],
-    );
 
     const renderNotificationPreview = useCallback(
         () => (
@@ -491,7 +483,11 @@ const PushNotificationManager: React.FC = () => {
                                             </td>
                                             <td className="px-6 py-4">
                                                 <div className="flex items-center space-x-3">
-                                                    {renderUserAvatar(user)}
+                                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
+                                                        <span className="text-sm font-medium text-blue-600">
+                                                            {createInitial(user.displayName)}
+                                                        </span>
+                                                    </div>
                                                     <div className="min-w-0 flex-1">
                                                         <div className="truncate font-medium text-gray-900">
                                                             {user.displayName}
