@@ -38,17 +38,21 @@ const data = {
     navNotification: [
         {
             title: 'Notifications',
-            url: '#',
+            url: 'notification',
             icon: Bell,
             isActive: true,
             items: [
                 {
-                    title: 'Push to All User',
-                    url: '#',
+                    title: 'Custom',
+                    url: '/notification/custom',
                 },
                 {
                     title: 'Segment',
-                    url: '#',
+                    url: '/notification/segment',
+                },
+                {
+                    title: 'Template',
+                    url: '/notification/template',
                 },
             ],
         },

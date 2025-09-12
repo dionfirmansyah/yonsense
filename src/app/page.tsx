@@ -1,6 +1,8 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { useAuth } from '@/components/yosense/auth/AuthProvider';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { usePushSubcriptions } from '@/hooks/yonsense/usePushSubcriptions';
@@ -15,13 +17,12 @@ interface SubscriptionUser {
 export default function Home() {
     const { currentProfile, user, isLoading } = useAuthUser();
     const { logout } = useAuth();
-
     const { subscriptonUsers } = usePushSubcriptions();
 
     const subscriptions = subscriptonUsers();
 
     if (isLoading) {
-        return <div className="p-8">Loading...</div>;
+        return <div className="p-8 text-center text-gray-500">Loading...</div>;
     }
 
     async function sendToAllUsers() {
@@ -65,90 +66,89 @@ export default function Home() {
     }
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <main className="mx-auto max-w-7xl py-6 sm:px-6 lg:px-8">
+        <div className="bg-muted/20 min-h-screen">
+            <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
                 {user ? (
-                    <div className="space-y-6">
-                        <div className="overflow-hidden bg-white shadow sm:rounded-lg">
-                            <div className="px-4 py-5 sm:px-6">
-                                <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                    Users with Push Subscriptions
-                                </h3>
-                            </div>
-                            <div className="border-t border-gray-200">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                                                No
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                                                Name
-                                            </th>
+                    <div className="space-y-8">
+                        {/* Users Table */}
+                        <Card className="shadow-sm">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-semibold">Users with Push Subscriptions</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[60px]">No</TableHead>
+                                            <TableHead>Name</TableHead>
+                                            <TableHead className="text-right">Action</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {subscriptions?.length ? (
+                                            subscriptions.map((sub: SubscriptionUser, index: number) => (
+                                                <TableRow key={sub.userId}>
+                                                    <TableCell className="text-muted-foreground">{index + 1}</TableCell>
+                                                    <TableCell className="font-medium">{sub.name}</TableCell>
+                                                    <TableCell className="text-right">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={async () => {
+                                                                try {
+                                                                    await sendToUser(sub.userId, sub.name);
+                                                                    toast.success(`Notification sent to ${sub.name}`);
+                                                                } catch (error) {
+                                                                    toast.error(`Failed to send to ${sub.name}`);
+                                                                }
+                                                            }}
+                                                            disabled={!sub.pushSubscription}
+                                                        >
+                                                            Send Test
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        ) : (
+                                            <TableRow>
+                                                <TableCell
+                                                    colSpan={3}
+                                                    className="text-muted-foreground py-6 text-center"
+                                                >
+                                                    No users found
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
 
-                                            <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                                                Action
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-200 bg-white">
-                                        {subscriptions?.map((sub: SubscriptionUser, index: number) => (
-                                            <tr key={sub.userId}>
-                                                <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
-                                                    {index + 1}
-                                                </td>
-                                                <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-gray-900">
-                                                    {sub.name}
-                                                </td>
-
-                                                <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        onClick={async () => {
-                                                            try {
-                                                                await sendToUser(sub.userId, sub.name);
-                                                                toast.success(`Notification sent to ${sub.name}`);
-                                                            } catch (error) {
-                                                                toast.error(`Failed to send to ${sub.name}`);
-                                                            }
-                                                        }}
-                                                        disabled={!sub.pushSubscription}
-                                                    >
-                                                        Send Test
-                                                    </Button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
-
-                        <div className="overflow-hidden rounded-lg bg-white shadow">
-                            <div className="px-4 py-5 sm:p-6">
-                                <h2 className="mb-4 text-lg font-medium text-gray-900">Send Test Notifications</h2>
-                                <div className="flex space-x-4">
-                                    <Button
-                                        onClick={async () => {
-                                            try {
-                                                await sendToAllUsers();
-                                                toast.success('Notification sent to all users');
-                                            } catch (error) {
-                                                toast.error('Failed to send notification');
-                                            }
-                                        }}
-                                    >
-                                        Send to All Users
-                                    </Button>
-                                </div>
-                            </div>
-                        </div>
+                        {/* Send to All Users */}
+                        <Card className="shadow-sm">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-semibold">Send Test Notifications</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <Button
+                                    onClick={async () => {
+                                        try {
+                                            await sendToAllUsers();
+                                            toast.success('Notification sent to all users');
+                                        } catch (error) {
+                                            toast.error('Failed to send notification');
+                                        }
+                                    }}
+                                >
+                                    Send to All Users
+                                </Button>
+                            </CardContent>
+                        </Card>
                     </div>
                 ) : (
-                    <div className="py-12 text-center">
-                        <h2 className="mb-4 text-2xl font-bold text-gray-900">Welcome to Push Notification Demo</h2>
-                        <p className="mb-6 text-gray-600">Please login to manage push notifications</p>
+                    <div className="py-20 text-center">
+                        <h2 className="mb-3 text-2xl font-bold text-gray-900">Welcome to Push Notification Demo</h2>
+                        <p className="text-gray-600">Please login to manage push notifications</p>
                     </div>
                 )}
             </main>

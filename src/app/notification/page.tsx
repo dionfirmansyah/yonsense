@@ -1,8 +1,12 @@
 'use client';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { useAuth } from '@/components/yosense/auth/AuthProvider';
 import { AppSidebar } from '@/components/yosense/sidebar/app-sidebar';
+
+import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 
 import SidebarContent from '@/components/yosense/sidebar/sidebar-content';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
@@ -72,61 +76,58 @@ export default function Page() {
             <SidebarContent>
                 {user ? (
                     <div className="space-y-6">
-                        <div className="overflow-hidden bg-white shadow sm:rounded-lg">
-                            <div className="px-4 py-5 sm:px-6">
-                                <h3 className="text-lg leading-6 font-medium text-gray-900">
-                                    Users with Push Subscriptions
-                                </h3>
-                            </div>
-                            <div className="border-t border-gray-200">
-                                <table className="min-w-full divide-y divide-gray-200">
-                                    <thead className="bg-gray-50">
-                                        <tr>
-                                            <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                                                No
-                                            </th>
-                                            <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                                                Name
-                                            </th>
-
-                                            <th className="px-6 py-3 text-left text-xs font-medium tracking-wider text-gray-500 uppercase">
-                                                Action
-                                            </th>
-                                        </tr>
-                                    </thead>
-                                    <tbody className="divide-y divide-gray-200 bg-white">
-                                        {subscriptions?.map((sub: SubscriptionUser, index: number) => (
-                                            <tr key={sub.userId}>
-                                                <td className="px-6 py-4 text-sm whitespace-nowrap text-gray-500">
-                                                    {index + 1}
-                                                </td>
-                                                <td className="px-6 py-4 text-sm font-medium whitespace-nowrap text-gray-900">
-                                                    {sub.name}
-                                                </td>
-
-                                                <td className="px-6 py-4 text-sm font-medium whitespace-nowrap">
-                                                    <Button
-                                                        variant="outline"
-                                                        size="sm"
-                                                        onClick={async () => {
-                                                            try {
-                                                                await sendToUser(sub.userId, sub.name);
-                                                                toast.success(`Notification sent to ${sub.name}`);
-                                                            } catch (error) {
-                                                                toast.error(`Failed to send to ${sub.name}`);
-                                                            }
-                                                        }}
-                                                        disabled={!sub.pushSubscription}
-                                                    >
-                                                        Send Test
-                                                    </Button>
-                                                </td>
-                                            </tr>
-                                        ))}
-                                    </tbody>
-                                </table>
-                            </div>
-                        </div>
+                        <Card className="shadow-sm">
+                            <CardHeader>
+                                <CardTitle className="text-lg font-semibold">Users with Push Subscriptions</CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <Table>
+                                    <TableHeader>
+                                        <TableRow>
+                                            <TableHead className="w-[60px]">No</TableHead>
+                                            <TableHead>Name</TableHead>
+                                            <TableHead className="text-right">Action</TableHead>
+                                        </TableRow>
+                                    </TableHeader>
+                                    <TableBody>
+                                        {subscriptions?.length ? (
+                                            subscriptions.map((sub: SubscriptionUser, index: number) => (
+                                                <TableRow key={sub.userId}>
+                                                    <TableCell className="text-muted-foreground">{index + 1}</TableCell>
+                                                    <TableCell className="font-medium">{sub.name}</TableCell>
+                                                    <TableCell className="text-right">
+                                                        <Button
+                                                            variant="outline"
+                                                            size="sm"
+                                                            onClick={async () => {
+                                                                try {
+                                                                    await sendToUser(sub.userId, sub.name);
+                                                                    toast.success(`Notification sent to ${sub.name}`);
+                                                                } catch (error) {
+                                                                    toast.error(`Failed to send to ${sub.name}`);
+                                                                }
+                                                            }}
+                                                            disabled={!sub.pushSubscription}
+                                                        >
+                                                            Send Test
+                                                        </Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        ) : (
+                                            <TableRow>
+                                                <TableCell
+                                                    colSpan={3}
+                                                    className="text-muted-foreground py-6 text-center"
+                                                >
+                                                    No users found
+                                                </TableCell>
+                                            </TableRow>
+                                        )}
+                                    </TableBody>
+                                </Table>
+                            </CardContent>
+                        </Card>
 
                         <div className="overflow-hidden rounded-lg bg-white shadow">
                             <div className="px-4 py-5 sm:p-6">

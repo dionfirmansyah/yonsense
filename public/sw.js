@@ -27,19 +27,18 @@ self.addEventListener('push', (event) => {
       body: data.body || 'You have a new message',
       icon: data.icon || '/yon-light-logo.svg',
       badge: data.badge || '/badge.png',
-      data: { url: data.url || '/' },
+      image: data.image || null,
+      data: { url: data.url|| null },
       vibrate: [200, 100, 200],
       actions: [
         {
           action: 'open',
           title: 'Open',
         },
-        {
-          action: 'close',
-          title: '✖ Close',
-        },
       ],
     };
+
+    console.log(data)
   
     event.waitUntil(self.registration.showNotification(title, options));
   });
