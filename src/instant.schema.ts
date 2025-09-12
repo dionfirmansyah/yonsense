@@ -19,6 +19,10 @@ const _schema = i.schema({
             createdAt: i.date(),
             updatedAt: i.date().optional(),
         }),
+        image_push_notifications: i.entity({
+            createdAt: i.date().indexed().optional(),
+            userId: i.string().indexed().optional(),
+        }),
         subscriptions: i.entity({
             userId: i.string().indexed(),
             endpoint: i.string().indexed().unique(),
@@ -52,6 +56,21 @@ const _schema = i.schema({
         userProfiles: {
             forward: { on: 'profiles', has: 'one', label: 'user' },
             reverse: { on: '$users', has: 'one', label: 'profile' },
+        },
+        image_push_notifications$files: {
+            forward: {
+                on: 'image_push_notifications',
+                has: 'one',
+                label: 'image',
+                required: true,
+                onDelete: 'cascade',
+            },
+            reverse: {
+                on: '$files',
+                has: 'one',
+                label: 'image_push_notifications',
+                onDelete: 'cascade',
+            },
         },
     },
     rooms: {
