@@ -1,8 +1,9 @@
 // src/app/api/push/route.ts - Route untuk multiple users
-import { dbAdmin } from '@/lib/db';
+import { authenticateAndAuthorize } from '@/lib/auth';
 import { env } from '@/lib/env';
+import { sendNotificationToUser } from '@/lib/push-notifications';
 import { NextRequest, NextResponse } from 'next/server';
-import webpush, { PushSubscription } from 'web-push';
+import webpush from 'web-push';
 
 interface PushDataMultiple {
     title: string;
@@ -25,71 +26,17 @@ interface PushDataSingle {
 // Set VAPID details
 webpush.setVapidDetails('mailto:admin@yourdomain.com', env.vapidPublicKey!, process.env.VAPID_PRIVATE_KEY!);
 
-// Helper function untuk mengirim notifikasi ke user
-async function sendNotificationToUser(userId: string, payload: string): Promise<{ success: boolean; error?: string }> {
-    try {
-        // Ambil semua subscription aktif untuk user ini
-        const data = await dbAdmin.query({
-            subscriptions: {
-                $: {
-                    where: {
-                        userId,
-                        isActive: true,
-                    },
-                },
-            },
-        });
-
-        const subscriptions = data?.subscriptions || [];
-
-        if (subscriptions.length === 0) {
-            return { success: false, error: 'No active subscriptions found' };
-        }
-
-        // Kirim notifikasi ke semua subscription user ini
-        const results = await Promise.allSettled(
-            subscriptions.map(async (sub: any) => {
-                try {
-                    const pushSubscription: PushSubscription =
-                        typeof sub.pushSubscriptions === 'string'
-                            ? JSON.parse(sub.pushSubscriptions)
-                            : sub.pushSubscriptions;
-
-                    await webpush.sendNotification(pushSubscription, payload);
-                    return { success: true, subscriptionId: sub.id };
-                } catch (err) {
-                    const error = err as { statusCode?: number; body?: unknown };
-                    console.error('Push error for subscription:', sub.id, error?.body || error);
-
-                    // Hapus subscription yang invalid (404 / 410)
-                    if (error.statusCode === 410 || error.statusCode === 404) {
-                        await dbAdmin.transact([dbAdmin.tx.subscriptions[sub.id].delete()]);
-                    }
-
-                    throw error;
-                }
-            }),
-        );
-
-        const successful = results.filter((result) => result.status === 'fulfilled').length;
-        const failed = results.filter((result) => result.status === 'rejected').length;
-
-        return {
-            success: successful > 0,
-            error: failed > 0 ? `${failed} subscriptions failed` : undefined,
-        };
-    } catch (err) {
-        console.error('Error sending notification to user:', userId, err);
-        return { success: false, error: 'Internal server error' };
-    }
-}
-
 // POST untuk multiple users
 export async function POST(req: NextRequest) {
     try {
+        const authResult = await authenticateAndAuthorize(req);
+
+        if (authResult.error) {
+            return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+        }
+
         const body = await req.json();
 
-        // Check if it's multiple users or single user request
         const isMultiple = 'userIds' in body;
 
         if (isMultiple) {
@@ -119,13 +66,6 @@ export async function POST(req: NextRequest) {
             // Hitung statistik
             const successful = results.filter((result) => result.status === 'fulfilled' && result.value.success).length;
             const failed = results.length - successful;
-
-            // Log untuk debugging
-            results.forEach((result, index) => {
-                if (result.status === 'rejected') {
-                    console.error(`Failed to send to user ${userIds[index]}:`, result.reason);
-                }
-            });
 
             return NextResponse.json({
                 success: true,

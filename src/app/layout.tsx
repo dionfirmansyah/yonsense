@@ -12,6 +12,7 @@ export const MetaData = {
         icon: '/favicon.ico',
         shortcut: '/favicon-16x16.png',
         apple: '/apple-touch-icon.png',
+        badge: 'badge-white.png',
     },
 };
 

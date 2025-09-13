@@ -1,8 +1,9 @@
 // src/app/api/push/[id]/route.ts
+import { authenticateAndAuthorize } from '@/lib/auth';
 import { dbAdmin } from '@/lib/db';
 import { env } from '@/lib/env';
 import { NextRequest, NextResponse } from 'next/server';
-import webpush, { PushSubscription } from 'web-push';
+import webpush from 'web-push';
 
 interface PushData {
     title: string;
@@ -15,9 +16,14 @@ webpush.setVapidDetails('mailto:admin@yourdomain.com', env.vapidPublicKey!, proc
 
 export async function POST(req: NextRequest) {
     try {
+        const authResult = await authenticateAndAuthorize(req);
+
+        if (authResult.error) {
+            return NextResponse.json({ error: authResult.error }, { status: authResult.status });
+        }
+
         const { title, body, userId } = (await req.json()) as PushData;
 
-        // ambil semua subscription aktif
         const data = await dbAdmin.query({
             subscriptions: {
                 $: {
@@ -31,24 +37,19 @@ export async function POST(req: NextRequest) {
 
         const subscriptions = data?.subscriptions || [];
 
+        console.log(subscriptions);
+
         const payload = JSON.stringify({
             title,
             body,
             icon: '/icon-192x192.png',
-            badge: '/badge.png',
+            badge: '/badge-white.png',
         });
 
-        // kirim notifikasi ke semua subscription
         await Promise.all(
             subscriptions.map(async (sub: any) => {
                 try {
-                    // kalau field di DB berupa string, parse
-                    const pushSubscription: PushSubscription =
-                        typeof sub.pushSubscriptions === 'string'
-                            ? JSON.parse(sub.pushSubscriptions)
-                            : sub.pushSubscriptions;
-
-                    await webpush.sendNotification(pushSubscription, payload);
+                    await webpush.sendNotification(JSON.parse(sub.pushSubscriptions), payload);
                 } catch (err) {
                     const error = err as { statusCode?: number; body?: unknown };
                     console.error('Push error:', error?.body || error);

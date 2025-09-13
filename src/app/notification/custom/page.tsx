@@ -49,7 +49,7 @@ const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB in bytes
 const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
 
 const PushNotificationManager: React.FC = () => {
-    const { allProfiles } = useAuthUser();
+    const { allProfiles, user } = useAuthUser();
 
     const [notification, setNotification] = useState<NotificationData>(INITIAL_NOTIFICATION_STATE);
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -157,7 +157,7 @@ const PushNotificationManager: React.FC = () => {
 
                 const res = await fetch(`/api/push/blast`, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { Authorization: `Bearer ${user?.refresh_token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         title: notification.title,
                         body: notification.message,

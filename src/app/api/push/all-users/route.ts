@@ -20,8 +20,7 @@ export async function POST(req: NextRequest) {
             title: title,
             body: body,
             icon: '/icon-192x192.png',
-            badge: '/badge.png',
-            // optional
+            badge: '/badge.svg',
         });
 
         // Kirim ke semua subscription aktif

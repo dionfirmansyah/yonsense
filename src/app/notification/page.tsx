@@ -54,10 +54,10 @@ export default function Page() {
         try {
             const res = await fetch(`/api/push`, {
                 method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
+                headers: { Authorization: `Bearer ${user?.refresh_token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     title: `Test Notif untuk ${userName} 🎉`,
-                    body: `Halo, ini notifikasi dari ${currentProfile?.displayName}`,
+                    body: `Halo, ini notifikasi dari ${currentProfile?.displayName} `,
                     userId,
                 }),
             });
