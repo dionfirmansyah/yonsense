@@ -42,8 +42,6 @@ export async function POST(req: NextRequest) {
         const payload = JSON.stringify({
             title,
             body,
-            icon: '/icon-192x192.png',
-            badge: '/badge-white.png',
         });
 
         await Promise.all(

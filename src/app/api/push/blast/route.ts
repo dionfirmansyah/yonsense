@@ -50,8 +50,6 @@ export async function POST(req: NextRequest) {
             const payload = JSON.stringify({
                 title,
                 body: message,
-                icon: '/icon-192x192.png',
-                badge: '/badge.png',
                 data: {
                     url: actionUrl || '/',
                     priority,

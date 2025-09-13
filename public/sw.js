@@ -25,10 +25,10 @@ self.addEventListener('push', (event) => {
     const title = data.title || 'New Notification';
     const options = {
       body: data.body || 'You have a new message',
-      icon: data.icon || '/yon-light-logo.svg',
-      badge: data.badge || '/badge.png',
+      icon: data.icon || '/icon-192x192.png',
+      badge: data.badge || '/badge-white.png',
       image: data.image || null,
-      data: { url: data.url|| null },
+      data: { url: data.url || '/notification' },
       vibrate: [200, 100, 200],
       actions: [
         {
