@@ -18,9 +18,9 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Input } from '@/components/ui/input';
-import { NotificationBell } from '@/components/ui/NotificationBell';
 import { Separator } from '@/components/ui/separator';
 import { SidebarMenuButton } from '@/components/ui/sidebar';
+import { NotificationBell } from '@/components/yosense/notification-bell';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { cn, createInitial } from '@/lib/utils';

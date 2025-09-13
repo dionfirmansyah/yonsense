@@ -26,7 +26,7 @@ const LoginModal: React.FC<LoginModalProps> = ({ onSuccess, onError, onClose, no
 
     const handleClose = () => {
         setIsVisible(false);
-        // Delay actual close to allow exit animation
+
         setTimeout(onClose, 200);
     };
 

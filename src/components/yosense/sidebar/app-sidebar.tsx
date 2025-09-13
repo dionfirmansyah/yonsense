@@ -22,7 +22,6 @@ import { Frame, Map, PieChart } from 'lucide-react';
 
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
 import { NavNotification } from '@/components/yosense/sidebar/nav-notification';
-import { NavProjects } from '@/components/yosense/sidebar/nav-projects';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { useAuth } from '../auth/AuthProvider';
@@ -43,16 +42,12 @@ const data = {
             isActive: true,
             items: [
                 {
+                    title: 'Test',
+                    url: '/notification',
+                },
+                {
                     title: 'Custom',
                     url: '/notification/custom',
-                },
-                {
-                    title: 'Segment',
-                    url: '/notification/segment',
-                },
-                {
-                    title: 'Template',
-                    url: '/notification/template',
                 },
             ],
         },
@@ -87,7 +82,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
             </SidebarHeader>
             <SidebarContent>
                 <NavNotification items={data.navNotification} />
-                <NavProjects projects={data.projects} />
+                {/* <NavProjects projects={data.projects} /> */}
             </SidebarContent>
             <SidebarFooter>
                 {isMobile && (

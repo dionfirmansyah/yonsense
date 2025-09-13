@@ -2,7 +2,7 @@
 
 import { usePushSubcriptions } from '@/hooks/yonsense/usePushSubcriptions';
 import { AlertTriangle, Bell, BellOff, Loader2 } from 'lucide-react';
-import { Button } from './button';
+import { Button } from '../ui/button';
 
 export function NotificationBell() {
     const { isSubscribed, isLoading, mounted, isSupported, swStatus, handleSubscription } = usePushSubcriptions();

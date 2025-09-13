@@ -2,7 +2,6 @@
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { SidebarProvider } from '@/components/ui/sidebar';
-import { useAuth } from '@/components/yosense/auth/AuthProvider';
 import { AppSidebar } from '@/components/yosense/sidebar/app-sidebar';
 
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -20,7 +19,6 @@ interface SubscriptionUser {
 
 export default function Page() {
     const { currentProfile, user, isLoading } = useAuthUser();
-    const { logout } = useAuth();
 
     const { subscriptonUsers } = usePushSubcriptions();
 
@@ -53,6 +51,7 @@ export default function Page() {
     async function sendToUser(userId: string, userName: string) {
         try {
             const res = await fetch(`/api/push`, {
+                // const res = await fetch(`http://localhost:3001/api/push`, {
                 method: 'POST',
                 headers: { Authorization: `Bearer ${user?.refresh_token}`, 'Content-Type': 'application/json' },
                 body: JSON.stringify({

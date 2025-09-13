@@ -4,6 +4,7 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/yosense/sidebar/app-sidebar';
 import SidebarContent from '@/components/yosense/sidebar/sidebar-content';
+import YonLogo from '@/components/yosense/yon-logo';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { createInitial } from '@/lib/utils';
 import { Bell, Eye, Send, Trash2, Users } from 'lucide-react';
@@ -142,19 +143,6 @@ const PushNotificationManager: React.FC = () => {
 
             setIsLoading(true);
             try {
-                let imageBase64 = '';
-
-                // console.log('Image type:', notification.image, typeof notification.image);
-
-                if (notification.image instanceof File) {
-                    imageBase64 = await convertImageToBase64(notification.image);
-                } else {
-                    imageBase64 = ''; // atau pakai URL kalau sudah di-upload
-                }
-                // console.log('Image type:', imageBase64, typeof imageBase64);
-
-                console.log(notification.actionUrl);
-
                 const res = await fetch(`/api/push/blast`, {
                     method: 'POST',
                     headers: { Authorization: `Bearer ${user?.refresh_token}`, 'Content-Type': 'application/json' },
@@ -175,7 +163,7 @@ const PushNotificationManager: React.FC = () => {
 
                 // Reset form after successful send
                 setNotification(INITIAL_NOTIFICATION_STATE);
-                setPreviewImage(null);
+                setSelectedImage(null);
                 setSelectedUsers([]);
 
                 const fileInput = document.getElementById('image-upload') as HTMLInputElement;
@@ -187,7 +175,7 @@ const PushNotificationManager: React.FC = () => {
                 setIsLoading(false);
             }
         },
-        [isFormValid],
+        [isFormValid, selectedImage, notification],
     );
 
     const handleSendToSingle = useCallback(
@@ -206,10 +194,7 @@ const PushNotificationManager: React.FC = () => {
     const renderNotificationPreview = useCallback(
         () => (
             <div className="rounded-lg border bg-gray-50 p-4">
-                <h3 className="mb-3 font-medium text-gray-900">
-                    Preview Notifikasi
-                    {notification.image ? `(with image: ${convertImageToBase64(notification.image)})` : ''}
-                </h3>
+                <h3 className="mb-3 font-medium text-gray-900">Preview Notifikasi</h3>
                 <div className="rounded-lg border bg-white p-4 shadow-sm">
                     <div className="flex items-start space-x-3">
                         <div className="flex-shrink-0">
@@ -217,29 +202,36 @@ const PushNotificationManager: React.FC = () => {
                                 <Bell className="h-4 w-4 text-white" />
                             </div>
                         </div>
-                        <div className="min-w-0 flex-1">
-                            <p className="font-medium text-gray-900">
-                                {notification.title.trim() || 'Judul Notifikasi'}
-                            </p>
-                            <p className="mt-1 text-sm text-gray-600">
-                                {notification.message.trim() || 'Pesan notifikasi akan muncul di sini...'}
-                            </p>
-                            {previewImage && (
-                                <img
-                                    src={previewImage}
-                                    alt="Preview notifikasi"
-                                    className="mt-2 h-24 max-w-full rounded object-cover"
-                                />
-                            )}
-                            {notification.actionUrl && (
-                                <p className="mt-1 text-xs text-blue-600">🔗 {notification.actionUrl}</p>
-                            )}
+                        <div className="flex w-full items-center justify-between">
+                            <div className="flex flex-col items-start">
+                                <p className="font-medium text-gray-900">
+                                    {notification.title.trim() || 'Judul Notifikasi'}
+                                </p>
+                                <p className="mt-1 mb-2 text-sm text-gray-600">
+                                    {notification.message.trim() || 'Pesan notifikasi akan muncul di sini...'}
+                                </p>
+                            </div>
+                            <div className="flex items-center">
+                                <YonLogo className="h-8 w-8" />
+                            </div>
                         </div>
+                    </div>
+                    <div className="min-w-0 flex-1">
+                        {selectedImage && (
+                            <img
+                                src={selectedImage}
+                                alt="Push Notification Image"
+                                className="h-[300px] w-full object-cover transition group-hover:opacity-80"
+                            />
+                        )}
+                        {notification.actionUrl && (
+                            <p className="mt-1 text-xs text-blue-600">🔗 {notification.actionUrl}</p>
+                        )}
                     </div>
                 </div>
             </div>
         ),
-        [notification, previewImage],
+        [notification, previewImage, selectedImage],
     );
 
     if (!allProfiles) {
@@ -263,17 +255,6 @@ const PushNotificationManager: React.FC = () => {
             <AppSidebar />
             <SidebarContent>
                 <div className="min-h-screen space-y-8 bg-gray-50">
-                    {/* Header */}
-                    <div className="space-y-2 text-center">
-                        <div className="flex items-center justify-center space-x-3">
-                            <div className="rounded-full bg-blue-100 p-3">
-                                <Bell className="h-8 w-8 text-blue-600" />
-                            </div>
-                            <h1 className="text-3xl font-bold text-gray-900">Push Notification Manager</h1>
-                        </div>
-                        <p className="text-gray-600">Buat dan kirim notifikasi custom ke pengguna Anda</p>
-                    </div>
-
                     {/* Error Alert */}
                     {error && (
                         <Alert className="border-red-200 bg-red-50">
@@ -290,73 +271,77 @@ const PushNotificationManager: React.FC = () => {
 
                         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                             {/* Form Fields */}
-                            <div className="space-y-4">
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">
-                                        Judul Notifikasi *
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                                        placeholder="Masukkan judul notifikasi..."
-                                        value={notification.title}
-                                        onChange={handleInputChange('title')}
-                                        maxLength={100}
-                                        required
-                                    />
-                                    <p className="mt-1 text-xs text-gray-500">
-                                        {notification.title.length}/100 karakter
-                                    </p>
-                                </div>
+                            <form>
+                                <div className="space-y-4">
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                                            Judul Notifikasi *
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                            placeholder="Masukkan judul notifikasi..."
+                                            value={notification.title}
+                                            onChange={handleInputChange('title')}
+                                            maxLength={100}
+                                            required
+                                        />
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            {notification.title.length}/100 karakter
+                                        </p>
+                                    </div>
 
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">Pesan *</label>
-                                    <textarea
-                                        className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                                        rows={4}
-                                        placeholder="Masukkan pesan notifikasi..."
-                                        value={notification.message}
-                                        onChange={handleInputChange('message')}
-                                        maxLength={500}
-                                        required
-                                    />
-                                    <p className="mt-1 text-xs text-gray-500">
-                                        {notification.message.length}/500 karakter
-                                    </p>
-                                </div>
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Pesan *</label>
+                                        <textarea
+                                            className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                            rows={4}
+                                            placeholder="Masukkan pesan notifikasi..."
+                                            value={notification.message}
+                                            onChange={handleInputChange('message')}
+                                            maxLength={500}
+                                            required
+                                        />
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            {notification.message.length}/500 karakter
+                                        </p>
+                                    </div>
 
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">
-                                        URL Aksi (Opsional)
-                                    </label>
-                                    <input
-                                        type="text"
-                                        className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                                        placeholder="https://example.com"
-                                        value={notification.actionUrl}
-                                        onChange={handleInputChange('actionUrl')}
-                                    />
-                                    <p className="mt-1 text-xs text-gray-500">
-                                        URL yang akan dibuka ketika notifikasi diklik
-                                    </p>
-                                    <p>{notification.actionUrl}</p>
-                                </div>
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                                            URL Aksi (Opsional)
+                                        </label>
+                                        <input
+                                            type="text"
+                                            className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                            placeholder="https://example.com"
+                                            value={notification.actionUrl}
+                                            onChange={handleInputChange('actionUrl')}
+                                        />
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            URL yang akan dibuka ketika notifikasi diklik
+                                        </p>
+                                        <p>{notification.actionUrl}</p>
+                                    </div>
 
-                                <div>
-                                    <label className="mb-2 block text-sm font-medium text-gray-700">Prioritas</label>
-                                    <select
-                                        className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                                        value={notification.priority}
-                                        onChange={handleInputChange('priority')}
-                                    >
-                                        {PRIORITY_OPTIONS.map((option) => (
-                                            <option key={option.value} value={option.value}>
-                                                {option.label}
-                                            </option>
-                                        ))}
-                                    </select>
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                                            Prioritas
+                                        </label>
+                                        <select
+                                            className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                            value={notification.priority}
+                                            onChange={handleInputChange('priority')}
+                                        >
+                                            {PRIORITY_OPTIONS.map((option) => (
+                                                <option key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
                                 </div>
-                            </div>
+                            </form>
 
                             {/* Image Upload & Preview */}
                             <div className="space-y-4">
@@ -365,18 +350,13 @@ const PushNotificationManager: React.FC = () => {
                                         Gambar Notifikasi (Opsional)
                                     </label>
                                     <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-colors hover:border-blue-400">
-                                        <UploadImageGallery onSelect={(url: string) => setSelectedImage(url)} />
-
-                                        {selectedImage && (
-                                            <div className="mt-4">
-                                                <img src={selectedImage} className="h-40 rounded-md object-cover" />
-                                            </div>
-                                        )}
+                                        <UploadImageGallery
+                                            onSelect={(url: string) => setSelectedImage(url)}
+                                            userId={user?.id}
+                                        />
                                     </div>
                                 </div>
-
-                                {/* Notification Preview */}
-                                {renderNotificationPreview()}
+                                <div className="space-y-4">{renderNotificationPreview()}</div>
                             </div>
                         </div>
                     </div>

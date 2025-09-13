@@ -37,8 +37,6 @@ export async function POST(req: NextRequest) {
 
         const subscriptions = data?.subscriptions || [];
 
-        console.log(subscriptions);
-
         const payload = JSON.stringify({
             title,
             body,

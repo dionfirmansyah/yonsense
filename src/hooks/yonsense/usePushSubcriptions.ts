@@ -196,6 +196,26 @@ export function usePushSubcriptions() {
         }
     };
 
+    const unsubscribe = async () => {
+        try {
+            const registration = await waitForServiceWorker(5000);
+            const sub = await registration.pushManager.getSubscription();
+            const subscriptionId = subscriptions?.find((s) => s.endpoint === sub?.endpoint)?.id;
+
+            console.log('subscriptionId', subscriptionId);
+            console.log('sub', sub);
+            console.log('subs', subscriptions);
+
+            if (subscriptionId) {
+                await sub?.unsubscribe();
+                await db.transact([db.tx.subscriptions[subscriptionId].delete()]);
+            }
+        } catch (err: any) {
+            notifyError(err, 'Failed to disable notifications');
+            throw err;
+        }
+    };
+
     /** --- Handler --- */
     const handleSubscription = async () => {
         if (!user) return toast.error('Please sign in to enable notifications');
@@ -241,5 +261,6 @@ export function usePushSubcriptions() {
         isSupported,
         swStatus,
         handleSubscription,
+        unsubscribe,
     };
 }
