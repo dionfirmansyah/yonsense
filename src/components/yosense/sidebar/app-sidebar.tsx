@@ -42,8 +42,12 @@ const data = {
             isActive: true,
             items: [
                 {
-                    title: 'Test',
+                    title: 'Your Notifications',
                     url: '/notification',
+                },
+                {
+                    title: 'Test',
+                    url: '/notification/test',
                 },
                 {
                     title: 'Custom',

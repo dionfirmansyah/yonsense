@@ -19,3 +19,5 @@ export const dbAdmin = adminInit({
 export type Todo = InstaQLEntity<typeof schema, 'todos'>;
 export type Profile = InstaQLEntity<typeof schema, 'profiles'>;
 export type ImagePushNotification = InstaQLEntity<typeof schema, 'image_push_notifications'>;
+export type Notification = InstaQLEntity<typeof schema, 'notifications'>;
+export type NotificationUser = InstaQLEntity<typeof schema, 'notificationUser'>;

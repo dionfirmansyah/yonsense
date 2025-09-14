@@ -23,6 +23,7 @@ const _schema = i.schema({
             createdAt: i.date().indexed().optional(),
             userId: i.string().indexed().optional(),
         }),
+
         subscriptions: i.entity({
             userId: i.string().indexed(),
             endpoint: i.string().indexed().unique(),
@@ -33,10 +34,17 @@ const _schema = i.schema({
         }),
         notifications: i.entity({
             title: i.string(),
-            body: i.string().optional(),
-            data: i.json().optional(),
-            read: i.boolean(),
+            body: i.string(),
+            priority: i.string().optional(),
+            actionUrl: i.string().optional(),
+            image: i.string().optional(),
             createdAt: i.date(),
+        }),
+        notificationUser: i.entity({
+            userId: i.string().indexed(),
+            isRead: i.boolean(),
+            createdAt: i.date(),
+            updatedAt: i.date().optional(),
         }),
         todos: i.entity({
             text: i.string(),
@@ -56,6 +64,10 @@ const _schema = i.schema({
         userProfiles: {
             forward: { on: 'profiles', has: 'one', label: 'user' },
             reverse: { on: '$users', has: 'one', label: 'profile' },
+        },
+        userNotificationUser: {
+            forward: { on: 'notificationUser', has: 'one', label: 'user' },
+            reverse: { on: '$users', has: 'one', label: 'notificationUser' },
         },
         image_push_notifications$files: {
             forward: {

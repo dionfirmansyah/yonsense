@@ -7,6 +7,7 @@ import { env } from '@/lib/env';
 import { generateNonce, parseIdToken } from '@/lib/utils';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import React, { createContext, useCallback, useContext, useMemo, useState } from 'react';
+import { toast } from 'sonner';
 import LoginCard from './login-card';
 
 // Context
@@ -23,7 +24,6 @@ export const useAuth = (): AuthContextType => {
 
 // Main Provider Component
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
-    const [showLogin, setShowLogin] = useState(false);
     const [nonce] = useState(generateNonce);
 
     const { updateProfile, addNewUserProfile, allProfiles, user } = useAuthUser();
@@ -73,30 +73,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 });
 
                 await syncUserProfile(parsedToken, user.id);
-                setShowLogin(false);
             } catch (error: any) {
                 const errorMessage = error.body?.message || error.message || 'Login failed';
-                console.error('Google login error:', error);
-                alert(`Login gagal: ${errorMessage}`);
+                toast.error(`Login gagal: ${errorMessage}`);
             }
         },
         [nonce, syncUserProfile],
     );
 
     const handleGoogleError = useCallback((): void => {
-        console.error('Google OAuth error occurred');
-        alert('Login Google gagal. Silakan coba lagi.');
+        toast.error('Login Google gagal. Silakan coba lagi.');
     }, []);
 
-    // Auth Actions
     const login = useCallback((): void => {
         if (!env.googleClientId) {
-            console.error('Google Client ID not configured');
-            alert('Google OAuth not configured properly');
+            toast.error('Google OAuth not configured properly');
             return;
         }
-        setShowLogin(true);
-    }, [setShowLogin]);
+    }, []);
 
     const logout = useCallback(async (): Promise<void> => {
         try {
@@ -104,7 +98,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
             await db.auth.signOut();
         } catch (error) {
             console.error('Logout error:', error);
-            alert('Error during logout');
+            toast.error('Error during logout');
         }
     }, [unsubscribe]);
 

@@ -1,6 +1,3 @@
-// app/layout.tsx
-'use client';
-
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/components/yosense/auth/AuthProvider';
 
@@ -21,9 +18,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
         <html lang="en" suppressHydrationWarning={true}>
             <body suppressHydrationWarning={true} className={'bg-background min-h-screen font-sans antialiased'}>
                 <AuthProvider>
-                    <div className="flex min-h-screen flex-col">
-                        <main className="flex-1">{children}</main>
-                    </div>
+                    <main className="flex-1">{children}</main>
                     <Toaster richColors position="top-center" />
                 </AuthProvider>
             </body>

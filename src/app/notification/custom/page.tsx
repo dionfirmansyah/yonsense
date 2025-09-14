@@ -1,6 +1,7 @@
 'use client';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Input } from '@/components/ui/input';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/yosense/sidebar/app-sidebar';
 import SidebarContent from '@/components/yosense/sidebar/sidebar-content';
@@ -21,15 +22,6 @@ interface NotificationData {
     priority: 'low' | 'normal' | 'high';
 }
 
-interface UserProfile {
-    id: string;
-    userId: string;
-    displayName?: string | undefined;
-    email: string;
-    status?: 'online' | 'offline' | 'away';
-    lastSeen?: string;
-}
-
 type NotificationPriority = 'low' | 'normal' | 'high';
 
 const PRIORITY_OPTIONS: { value: NotificationPriority; label: string }[] = [
@@ -46,15 +38,11 @@ const INITIAL_NOTIFICATION_STATE: NotificationData = {
     priority: 'normal',
 };
 
-const MAX_FILE_SIZE = 2 * 1024 * 1024; // 2MB in bytes
-const ACCEPTED_IMAGE_TYPES = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
-
 const PushNotificationManager: React.FC = () => {
     const { allProfiles, user } = useAuthUser();
 
     const [notification, setNotification] = useState<NotificationData>(INITIAL_NOTIFICATION_STATE);
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
-    const [previewImage, setPreviewImage] = useState<string | null>(null);
     const [isLoading, setIsLoading] = useState<boolean>(false);
     const [error, setError] = useState<string | null>(null);
 
@@ -65,25 +53,6 @@ const PushNotificationManager: React.FC = () => {
         return Boolean(notification.title.trim() && notification.message.trim());
     }, [notification.title, notification.message]);
 
-    const convertImageToBase64 = useCallback((file: File): Promise<string> => {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = reject;
-            reader.readAsDataURL(file);
-        });
-    }, []);
-
-    const validateImageFile = useCallback((file: File): string | null => {
-        if (!ACCEPTED_IMAGE_TYPES.includes(file.type)) {
-            return 'Format gambar tidak didukung. Gunakan JPG, JPEG, PNG, atau WebP.';
-        }
-        if (file.size > MAX_FILE_SIZE) {
-            return 'Ukuran gambar terlalu besar. Maksimal 2MB.';
-        }
-        return null;
-    }, []);
-
     // Event handlers
     const handleInputChange = useCallback((field: keyof NotificationData) => {
         return (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
@@ -91,39 +60,6 @@ const PushNotificationManager: React.FC = () => {
             setNotification((prev) => ({ ...prev, [field]: value }));
             setError(null);
         };
-    }, []);
-
-    const handleImageUpload = useCallback(
-        (event: ChangeEvent<HTMLInputElement>) => {
-            const file = event.target.files?.[0];
-            if (!file) return;
-
-            const validationError = validateImageFile(file);
-            if (validationError) {
-                setError(validationError);
-                return;
-            }
-
-            const reader = new FileReader();
-            reader.onload = (e) => {
-                const result = e.target?.result as string;
-                setPreviewImage(result);
-                setNotification((prev) => ({ ...prev, image: file }));
-                setError(null);
-            };
-            reader.onerror = () => {
-                setError('Gagal membaca file gambar.');
-            };
-            reader.readAsDataURL(file);
-        },
-        [validateImageFile],
-    );
-
-    const removeImage = useCallback(() => {
-        setPreviewImage(null);
-        setNotification((prev) => ({ ...prev, image: null }));
-        const fileInput = document.getElementById('image-upload') as HTMLInputElement;
-        if (fileInput) fileInput.value = '';
     }, []);
 
     const handleSelectUser = useCallback((userId: string) => {
@@ -231,24 +167,8 @@ const PushNotificationManager: React.FC = () => {
                 </div>
             </div>
         ),
-        [notification, previewImage, selectedImage],
+        [notification, selectedImage],
     );
-
-    if (!allProfiles) {
-        return (
-            <SidebarProvider>
-                <AppSidebar />
-                <SidebarContent>
-                    <div className="flex h-64 items-center justify-center">
-                        <div className="text-center">
-                            <div className="mx-auto h-8 w-8 animate-spin rounded-full border-b-2 border-blue-600"></div>
-                            <p className="mt-2 text-gray-600">Memuat data pengguna...</p>
-                        </div>
-                    </div>
-                </SidebarContent>
-            </SidebarProvider>
-        );
-    }
 
     return (
         <SidebarProvider>
@@ -277,9 +197,8 @@ const PushNotificationManager: React.FC = () => {
                                         <label className="mb-2 block text-sm font-medium text-gray-700">
                                             Judul Notifikasi *
                                         </label>
-                                        <input
+                                        <Input
                                             type="text"
-                                            className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
                                             placeholder="Masukkan judul notifikasi..."
                                             value={notification.title}
                                             onChange={handleInputChange('title')}
@@ -299,11 +218,11 @@ const PushNotificationManager: React.FC = () => {
                                             placeholder="Masukkan pesan notifikasi..."
                                             value={notification.message}
                                             onChange={handleInputChange('message')}
-                                            maxLength={500}
+                                            maxLength={200}
                                             required
                                         />
                                         <p className="mt-1 text-xs text-gray-500">
-                                            {notification.message.length}/500 karakter
+                                            {notification.message.length}/200 karakter
                                         </p>
                                     </div>
 
@@ -311,9 +230,8 @@ const PushNotificationManager: React.FC = () => {
                                         <label className="mb-2 block text-sm font-medium text-gray-700">
                                             URL Aksi (Opsional)
                                         </label>
-                                        <input
+                                        <Input
                                             type="text"
-                                            className="w-full rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
                                             placeholder="https://example.com"
                                             value={notification.actionUrl}
                                             onChange={handleInputChange('actionUrl')}
@@ -367,11 +285,11 @@ const PushNotificationManager: React.FC = () => {
                             <div className="flex items-center justify-between">
                                 <h2 className="flex items-center space-x-2 text-xl font-semibold text-gray-900">
                                     <Users className="h-5 w-5" />
-                                    <span>Daftar Pengguna ({allProfiles.length})</span>
+                                    <span>Daftar Pengguna ({allProfiles?.length})</span>
                                 </h2>
                                 <div className="flex items-center space-x-3">
                                     <span className="text-sm text-gray-600">
-                                        {selectedUsers.length} dari {allProfiles.length} dipilih
+                                        {selectedUsers.length} dari {allProfiles?.length} dipilih
                                     </span>
                                     <button
                                         type="button"
@@ -403,8 +321,8 @@ const PushNotificationManager: React.FC = () => {
                                             <input
                                                 type="checkbox"
                                                 checked={
-                                                    selectedUsers.length === allProfiles.length &&
-                                                    allProfiles.length > 0
+                                                    selectedUsers.length === allProfiles?.length &&
+                                                    allProfiles?.length > 0
                                                 }
                                                 onChange={handleSelectAll}
                                                 className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
@@ -420,7 +338,7 @@ const PushNotificationManager: React.FC = () => {
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200">
-                                    {allProfiles.map((user) => (
+                                    {allProfiles?.map((user) => (
                                         <tr key={user.id} className="transition-colors hover:bg-gray-50">
                                             <td className="px-6 py-4">
                                                 <input

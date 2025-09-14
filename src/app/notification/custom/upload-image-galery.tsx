@@ -16,7 +16,7 @@ export default function UploadImageGallery({
     onSelect,
     userId,
     selectedImage,
-    maxFileSize = 5,
+    maxFileSize = 4,
 }: UploadImageGalleryProps) {
     const [isUploading, setIsUploading] = useState(false);
     const [uploadError, setUploadError] = useState<string | null>(null);

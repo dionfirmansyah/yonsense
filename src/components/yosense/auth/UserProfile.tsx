@@ -11,6 +11,7 @@ import {
     DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
+import { createInitial } from '@/lib/utils';
 import { useAuth } from './AuthProvider';
 
 export function UserProfile() {
@@ -18,14 +19,6 @@ export function UserProfile() {
     const { user, currentProfile } = useAuthUser();
 
     if (!user) return null;
-
-    const getInitials = (name: string) => {
-        return name
-            .split(' ')
-            .map((n) => n[0])
-            .join('')
-            .toUpperCase();
-    };
 
     return (
         <DropdownMenu>
@@ -35,7 +28,7 @@ export function UserProfile() {
                         {currentProfile?.picture ? (
                             <AvatarImage src={currentProfile.picture} alt={currentProfile.displayName || 'User'} />
                         ) : (
-                            <AvatarFallback>{getInitials(currentProfile?.displayName || 'U')}</AvatarFallback>
+                            <AvatarFallback>{createInitial(currentProfile?.displayName || 'U')}</AvatarFallback>
                         )}
                     </Avatar>
                 </Button>
