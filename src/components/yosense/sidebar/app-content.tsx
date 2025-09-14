@@ -28,7 +28,7 @@ import { toast } from 'sonner';
 import { useAuth } from '../auth/AuthProvider';
 import AppLogo from './app-logo';
 
-export default function SidebarContent({ children, className }: React.ComponentProps<'div'>) {
+export default function AppContent({ children, className }: React.ComponentProps<'div'>) {
     const isMobile = useIsMobile();
     const { logout } = useAuth();
     const { currentProfile, user } = useAuthUser();

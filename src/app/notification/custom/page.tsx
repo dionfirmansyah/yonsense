@@ -3,8 +3,8 @@
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Input } from '@/components/ui/input';
 import { SidebarProvider } from '@/components/ui/sidebar';
+import AppContent from '@/components/yosense/sidebar/app-content';
 import { AppSidebar } from '@/components/yosense/sidebar/app-sidebar';
-import SidebarContent from '@/components/yosense/sidebar/sidebar-content';
 import YonLogo from '@/components/yosense/yon-logo';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { createInitial } from '@/lib/utils';
@@ -173,7 +173,7 @@ const PushNotificationManager: React.FC = () => {
     return (
         <SidebarProvider>
             <AppSidebar />
-            <SidebarContent>
+            <AppContent>
                 <div className="min-h-screen space-y-8 bg-gray-50">
                     {/* Error Alert */}
                     {error && (
@@ -414,7 +414,7 @@ const PushNotificationManager: React.FC = () => {
                         </Alert>
                     )}
                 </div>
-            </SidebarContent>
+            </AppContent>
         </SidebarProvider>
     );
 };

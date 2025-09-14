@@ -1,6 +1,6 @@
 import { SidebarProvider } from '@/components/ui/sidebar';
+import AppContent from '@/components/yosense/sidebar/app-content';
 import { AppSidebar } from '@/components/yosense/sidebar/app-sidebar';
-import SidebarContent from '@/components/yosense/sidebar/sidebar-content';
 import YonLogo from '@/components/yosense/yon-logo';
 interface PageProps {}
 
@@ -8,7 +8,7 @@ export default function Page({}: PageProps) {
     return (
         <SidebarProvider>
             <AppSidebar />
-            <SidebarContent>
+            <AppContent>
                 <div className="container mx-auto flex h-screen justify-center">
                     <div className="animate flex animate-pulse items-center">
                         <div className="flex aspect-square size-12 items-center rounded-lg">
@@ -21,7 +21,7 @@ export default function Page({}: PageProps) {
                         </div>
                     </div>
                 </div>
-            </SidebarContent>
+            </AppContent>
         </SidebarProvider>
     );
 }

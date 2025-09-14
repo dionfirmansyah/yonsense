@@ -4,7 +4,7 @@ import { AppSidebar } from '@/components/yosense/sidebar/app-sidebar';
 
 import { CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 
-import SidebarContent from '@/components/yosense/sidebar/sidebar-content';
+import SidebarContent from '@/components/yosense/sidebar/app-content';
 import UserTable from './user-table';
 
 export default function Page() {
