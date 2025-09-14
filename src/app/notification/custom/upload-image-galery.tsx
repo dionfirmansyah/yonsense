@@ -1,5 +1,7 @@
 'use client';
 
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
 import { db } from '@/lib/db';
 import { id } from '@instantdb/react';
 import { AlertCircle, CheckIcon, Image as ImageIcon, Trash2, Upload } from 'lucide-react';
@@ -111,7 +113,6 @@ export default function UploadImageGallery({
         try {
             await db.transact(db.tx.image_push_notifications[imageId].delete());
 
-            // Clear selection if deleted image was selected
             if (selectedImageId === imageId) {
                 setSelectedImageId(null);
             }
@@ -163,38 +164,6 @@ export default function UploadImageGallery({
 
     return (
         <div className="space-y-4">
-            {/* Upload Section */}
-            <div className="space-y-2">
-                <label
-                    className={`flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-dashed px-3 py-2 text-sm transition-colors ${
-                        isUploading
-                            ? 'cursor-not-allowed border-gray-300 bg-gray-50 text-gray-400'
-                            : 'border-gray-400 text-gray-600 hover:border-gray-500 hover:bg-gray-50'
-                    }`}
-                >
-                    <Upload className="h-4 w-4" />
-                    {isUploading ? 'Uploading...' : 'Upload Image'}
-                    <input
-                        type="file"
-                        accept="image/jpeg,image/png,image/webp,image/gif"
-                        className="hidden"
-                        onChange={handleUpload}
-                        disabled={isUploading}
-                    />
-                </label>
-
-                {/* Upload Error */}
-                {uploadError && (
-                    <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
-                        <AlertCircle size={14} />
-                        <span>{uploadError}</span>
-                    </div>
-                )}
-
-                {/* Upload Info */}
-                <p className="text-xs text-gray-500">Max file size: {maxFileSize}MB. Supports JPEG, PNG, WebP, GIF</p>
-            </div>
-
             {/* Gallery */}
             {isLoading ? (
                 loadingState()
@@ -218,23 +187,22 @@ export default function UploadImageGallery({
                             >
                                 {/* Selected Indicator */}
                                 {isSelected && (
-                                    <div className="absolute top-2 left-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white shadow-sm">
+                                    <div className="absolute top-1 left-1 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white shadow-sm">
                                         <CheckIcon size={14} />
                                     </div>
                                 )}
 
                                 {/* Delete Button */}
-                                {(isSelected || true) && (
-                                    <button
-                                        onClick={(e) => {
-                                            e.stopPropagation();
-                                            handleDelete(file.id, file.image?.path);
-                                        }}
-                                        className="border-border absolute top-1 right-1 z-10 flex h-6 w-6 items-center justify-center rounded-full border bg-white/95 text-red-500 shadow-sm transition-all duration-200 hover:bg-red-50 hover:text-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:outline-none"
-                                    >
-                                        <Trash2 size={12} />
-                                    </button>
-                                )}
+
+                                <button
+                                    onClick={(e) => {
+                                        e.stopPropagation();
+                                        handleDelete(file.id, file.image?.path);
+                                    }}
+                                    className="border-border absolute top-1 right-1 z-10 flex h-6 w-6 items-center justify-center rounded-full border bg-white/95 text-red-500 shadow-sm transition-all duration-200 hover:bg-red-50 hover:text-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:outline-none"
+                                >
+                                    <Trash2 size={12} />
+                                </button>
 
                                 {/* Image */}
                                 <img
@@ -282,6 +250,50 @@ export default function UploadImageGallery({
                     )}
                 </div>
             )}
+
+            {/* Upload Section */}
+            <div className="space-y-2">
+                <div className="flex justify-center gap-3">
+                    <label
+                        className={`flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-dashed px-3 py-2 text-sm transition-colors ${
+                            isUploading
+                                ? 'cursor-not-allowed border-gray-300 bg-gray-50 text-gray-400'
+                                : 'border-gray-400 text-gray-600 hover:border-gray-500 hover:bg-gray-50'
+                        }`}
+                    >
+                        <Upload className="h-4 w-4" />
+                        {isUploading ? 'Uploading...' : 'Upload Image'}
+                        <Input
+                            type="file"
+                            accept="image/jpeg,image/png,image/webp,image/gif"
+                            className="hidden"
+                            onChange={handleUpload}
+                            disabled={isUploading}
+                        />
+                    </label>
+                    {selectedImageId && (
+                        <Button
+                            variant="outline"
+                            onClick={() => {
+                                onSelect('');
+                            }}
+                        >
+                            cancle
+                        </Button>
+                    )}
+                </div>
+
+                {/* Upload Error */}
+                {uploadError && (
+                    <div className="flex items-center gap-2 rounded-lg border border-red-200 bg-red-50 px-3 py-2 text-sm text-red-600">
+                        <AlertCircle size={14} />
+                        <span>{uploadError}</span>
+                    </div>
+                )}
+
+                {/* Upload Info */}
+                <p className="text-xs text-gray-500">Max file size: {maxFileSize}MB. Supports JPEG, PNG, WebP, GIF</p>
+            </div>
 
             {/* Image Count Info */}
             {data?.image_push_notifications && data.image_push_notifications.length > 0 && (

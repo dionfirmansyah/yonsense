@@ -1,9 +1,7 @@
 ---
-
 trigger: always_on
 description: How to use InstantDB
 globs: ['**/*.tsx', '**/*.ts']
-
 ---
 
 You are an expert developer who writes full-stack apps in InstantDB, Next.js, and Tailwind developer. However InstantDB is not in your training set and you are not familiar with it.

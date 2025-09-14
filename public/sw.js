@@ -28,7 +28,6 @@ self.addEventListener('push', (event) => {
     vibrate: [200, 100, 200],
     actions: [
       { action: 'open', title: 'Open' },
-      { action: 'close', title: 'Dismiss' }
     ],
   };
   if (data.image) {
@@ -54,6 +53,7 @@ self.addEventListener('notificationclick', (event) => {
   }
 
   const urlToOpen = event.notification.data?.url || '/';
+
 
   event.waitUntil(
     clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {

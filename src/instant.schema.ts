@@ -35,15 +35,23 @@ const _schema = i.schema({
         notifications: i.entity({
             title: i.string(),
             body: i.string(),
+            tag: i.string().optional(),
             priority: i.string().optional(),
             actionUrl: i.string().optional(),
             image: i.string().optional(),
-            createdAt: i.date(),
+            senderId: i.string().indexed().optional(),
+            receiverId: i.string().indexed().optional(),
+            readAt: i.date().optional(),
+            createdAt: i.date().optional(),
+            updatedAt: i.date().optional(),
         }),
-        notificationUser: i.entity({
-            userId: i.string().indexed(),
-            isRead: i.boolean(),
-            createdAt: i.date(),
+        notificationTemplates: i.entity({
+            title: i.string(),
+            body: i.string(),
+            priority: i.string().optional(),
+            actionUrl: i.string().optional(),
+            image: i.string().optional(),
+            createdAt: i.date().optional(),
             updatedAt: i.date().optional(),
         }),
         todos: i.entity({
@@ -57,17 +65,9 @@ const _schema = i.schema({
             forward: { on: 'subscriptions', has: 'many', label: 'user' },
             reverse: { on: '$users', has: 'many', label: 'subscriptions' },
         },
-        userNotifications: {
-            forward: { on: 'notifications', has: 'many', label: 'user' },
-            reverse: { on: '$users', has: 'many', label: 'notifications' },
-        },
         userProfiles: {
             forward: { on: 'profiles', has: 'one', label: 'user' },
             reverse: { on: '$users', has: 'one', label: 'profile' },
-        },
-        userNotificationUser: {
-            forward: { on: 'notificationUser', has: 'one', label: 'user' },
-            reverse: { on: '$users', has: 'one', label: 'notificationUser' },
         },
         image_push_notifications$files: {
             forward: {

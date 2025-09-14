@@ -1,14 +1,17 @@
 'use client';
 
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { SidebarProvider } from '@/components/ui/sidebar';
 import AppContent from '@/components/yosense/sidebar/app-content';
 import { AppSidebar } from '@/components/yosense/sidebar/app-sidebar';
 import YonLogo from '@/components/yosense/yon-logo';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
+import { db } from '@/lib/db';
 import { createInitial } from '@/lib/utils';
-import { Bell, Eye, Send, Trash2, Users } from 'lucide-react';
+import { id } from '@instantdb/react';
+import { Bell, Eye, Loader2, Plus, Send, Trash2, Users } from 'lucide-react';
 import { ChangeEvent, useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import UploadImageGallery from './upload-image-galery';
@@ -16,7 +19,7 @@ import UploadImageGallery from './upload-image-galery';
 // TypeScript Interfaces
 interface NotificationData {
     title: string;
-    message: string;
+    body: string;
     image: File | null;
     actionUrl: string;
     priority: 'low' | 'normal' | 'high';
@@ -32,7 +35,7 @@ const PRIORITY_OPTIONS: { value: NotificationPriority; label: string }[] = [
 
 const INITIAL_NOTIFICATION_STATE: NotificationData = {
     title: '',
-    message: '',
+    body: '',
     image: null,
     actionUrl: '',
     priority: 'normal',
@@ -50,8 +53,8 @@ const PushNotificationManager: React.FC = () => {
 
     // Validation helpers
     const isFormValid = useCallback((): boolean => {
-        return Boolean(notification.title.trim() && notification.message.trim());
-    }, [notification.title, notification.message]);
+        return Boolean(notification.title.trim() && notification.body.trim());
+    }, [notification.title, notification.body]);
 
     // Event handlers
     const handleInputChange = useCallback((field: keyof NotificationData) => {
@@ -84,7 +87,7 @@ const PushNotificationManager: React.FC = () => {
                     headers: { Authorization: `Bearer ${user?.refresh_token}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         title: notification.title,
-                        body: notification.message,
+                        body: notification.body,
                         userIds,
                         actionUrl: notification.actionUrl,
                         priority: notification.priority,
@@ -101,9 +104,6 @@ const PushNotificationManager: React.FC = () => {
                 setNotification(INITIAL_NOTIFICATION_STATE);
                 setSelectedImage(null);
                 setSelectedUsers([]);
-
-                const fileInput = document.getElementById('image-upload') as HTMLInputElement;
-                if (fileInput) fileInput.value = '';
             } catch (err) {
                 setError('Gagal mengirim notifikasi. Silakan coba lagi.');
                 console.error('Send notification error:', err);
@@ -111,8 +111,32 @@ const PushNotificationManager: React.FC = () => {
                 setIsLoading(false);
             }
         },
-        [isFormValid, selectedImage, notification],
+        [isFormValid, handleInputChange, selectedImage, notification],
     );
+
+    const handleSaveTemplates = useCallback(async () => {
+        if (!isFormValid) return;
+
+        setIsLoading(true);
+        try {
+            await db.transact(
+                db.tx.notificationTemplates[id()].create({
+                    title: notification.title,
+                    body: notification.body,
+                    priority: notification.priority,
+                    actionUrl: notification.actionUrl,
+                    image: selectedImage,
+                }),
+            );
+            setNotification(INITIAL_NOTIFICATION_STATE);
+            setSelectedImage(null);
+            toast.success('Template notifikasi berhasil disimpan.');
+        } catch (error) {
+            toast.error('Gagal menyimpan template notifikasi. Silakan coba lagi.');
+        } finally {
+            setIsLoading(false);
+        }
+    }, [handleInputChange, selectedImage]);
 
     const handleSendToSingle = useCallback(
         (userId: string) => {
@@ -144,7 +168,7 @@ const PushNotificationManager: React.FC = () => {
                                     {notification.title.trim() || 'Judul Notifikasi'}
                                 </p>
                                 <p className="mt-1 mb-2 text-sm text-gray-600">
-                                    {notification.message.trim() || 'Pesan notifikasi akan muncul di sini...'}
+                                    {notification.body.trim() || 'Pesan notifikasi akan muncul di sini...'}
                                 </p>
                             </div>
                             <div className="flex items-center">
@@ -184,10 +208,22 @@ const PushNotificationManager: React.FC = () => {
 
                     {/* Form Section */}
                     <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-lg">
-                        <h2 className="mb-6 flex items-center space-x-2 text-xl font-semibold text-gray-900">
-                            <Bell className="h-5 w-5" />
-                            <span>Buat Notifikasi Baru</span>
-                        </h2>
+                        <div className="mb-6 flex items-center justify-between">
+                            <h2 className="flex items-center space-x-2 text-xl font-semibold text-gray-900">
+                                <Bell className="h-5 w-5" />
+                                <span>Create Notification</span>
+                            </h2>
+                            {isFormValid() && (
+                                <Button className="ml-2" size={'sm'} onClick={handleSaveTemplates} disabled={isLoading}>
+                                    {isLoading ? (
+                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    ) : (
+                                        <Plus className="mr-2 h-4 w-4" />
+                                    )}
+                                    Save as Template
+                                </Button>
+                            )}
+                        </div>
 
                         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                             {/* Form Fields */}
@@ -216,13 +252,13 @@ const PushNotificationManager: React.FC = () => {
                                             className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 transition-all focus:border-transparent focus:ring-2 focus:ring-blue-500"
                                             rows={4}
                                             placeholder="Masukkan pesan notifikasi..."
-                                            value={notification.message}
-                                            onChange={handleInputChange('message')}
+                                            value={notification.body}
+                                            onChange={handleInputChange('body')}
                                             maxLength={200}
                                             required
                                         />
                                         <p className="mt-1 text-xs text-gray-500">
-                                            {notification.message.length}/200 karakter
+                                            {notification.body.length}/200 karakter
                                         </p>
                                     </div>
 
@@ -239,7 +275,6 @@ const PushNotificationManager: React.FC = () => {
                                         <p className="mt-1 text-xs text-gray-500">
                                             URL yang akan dibuka ketika notifikasi diklik
                                         </p>
-                                        <p>{notification.actionUrl}</p>
                                     </div>
 
                                     <div>
