@@ -1,12 +1,18 @@
+import YonLogo from '@/components/yosense/yon-logo';
+
 export default function Home() {
     return (
-        <div className="bg-muted/20 min-h-screen">
-            <main className="mx-auto max-w-5xl px-4 py-10 sm:px-6 lg:px-8">
-                <div className="py-20 text-center">
-                    <h2 className="mb-3 text-2xl font-bold text-gray-900">Welcome to Push Notification Demo</h2>
-                    <p className="text-gray-600">Please login to manage push notifications</p>
+        <div className="container mx-auto flex h-screen justify-center">
+            <div className="animate flex animate-pulse items-center">
+                <div className="flex aspect-square size-12 items-center rounded-lg">
+                    <YonLogo className="fill-primary" />
                 </div>
-            </main>
+
+                <div className="ml-2 grid flex-col text-left text-sm leading-tight">
+                    <span className="truncate font-bold">Yonsense</span>
+                    <span className="truncate text-xs">Top PWA Starter</span>
+                </div>
+            </div>
         </div>
     );
 }

@@ -23,13 +23,9 @@ const LoginCard: React.FC<LoginCardProps> = ({ onSuccess, onError, nonce }) => {
     };
 
     return (
-        <div className="relative mx-auto mt-20 w-full max-w-md">
-            {/* Background dengan glass effect */}
-            <div className="absolute inset-0 rounded-2xl bg-white/90 shadow-2xl ring-1 ring-black/5 backdrop-blur-xl" />
-            <div className="absolute -inset-1 rounded-2xl bg-gradient-to-r from-blue-600 via-purple-600 to-blue-600 opacity-20 blur-lg" />
-
+        <div className="container mx-auto flex h-screen items-center justify-center p-4">
             {/* Content */}
-            <div className="relative rounded-2xl bg-white/80 p-8 backdrop-blur-xl">
+            <div className="max-w-md rounded-2xl border border-gray-500 p-8">
                 {/* Header */}
                 <div className="mb-8 text-center">
                     <div className="mx-auto mb-6 flex w-full items-center justify-center gap-2">
@@ -54,7 +50,9 @@ const LoginCard: React.FC<LoginCardProps> = ({ onSuccess, onError, nonce }) => {
                 <div className="space-y-6">
                     <div className="flex items-center justify-center space-x-2 rounded-lg bg-green-50 px-4 py-2 text-sm">
                         <Shield className="h-4 w-4 text-green-600" />
-                        <span className="font-medium text-green-700">Login aman dengan enkripsi end-to-end</span>
+                        <span className="text-center font-medium text-green-700">
+                            Login aman dengan enkripsi end-to-end
+                        </span>
                     </div>
 
                     <div className="flex justify-center">

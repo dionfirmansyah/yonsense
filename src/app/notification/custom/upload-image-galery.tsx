@@ -136,12 +136,10 @@ export default function UploadImageGallery({
     };
 
     // Loading state
-    if (isLoading) {
+
+    const loadingState = () => {
         return (
             <div className="space-y-4">
-                <div className="animate-pulse">
-                    <div className="h-10 w-32 rounded-lg bg-gray-200"></div>
-                </div>
                 <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
                     {[...Array(4)].map((_, i) => (
                         <div key={i} className="animate-pulse">
@@ -151,7 +149,7 @@ export default function UploadImageGallery({
                 </div>
             </div>
         );
-    }
+    };
 
     // Error state
     if (error) {
@@ -198,88 +196,92 @@ export default function UploadImageGallery({
             </div>
 
             {/* Gallery */}
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
-                {data?.image_push_notifications?.map((file) => {
-                    const imageUrl = file.image?.url;
-                    if (!imageUrl) return null;
+            {isLoading ? (
+                loadingState()
+            ) : (
+                <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-4">
+                    {data?.image_push_notifications?.map((file) => {
+                        const imageUrl = file.image?.url;
+                        if (!imageUrl) return null;
 
-                    const isSelected = selectedImageId === file.id || selectedImage === imageUrl;
+                        const isSelected = selectedImageId === file.id || selectedImage === imageUrl;
 
-                    return (
-                        <div
-                            key={file.id}
-                            className={`group relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all duration-200 hover:shadow-lg ${
-                                isSelected
-                                    ? 'border-blue-500 shadow-md ring-2 ring-blue-500 ring-offset-2'
-                                    : 'border-gray-200 hover:border-gray-300'
-                            }`}
-                            onClick={() => handleImageSelect(imageUrl, file.id)}
-                        >
-                            {/* Selected Indicator */}
-                            {isSelected && (
-                                <div className="absolute top-2 left-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white shadow-sm">
-                                    <CheckIcon size={14} />
-                                </div>
-                            )}
-
-                            {/* Delete Button */}
-                            {(isSelected || true) && (
-                                <button
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleDelete(file.id, file.image?.path);
-                                    }}
-                                    className="border-border absolute top-1 right-1 z-10 flex h-6 w-6 items-center justify-center rounded-full border bg-white/95 text-red-500 shadow-sm transition-all duration-200 hover:bg-red-50 hover:text-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:outline-none"
-                                >
-                                    <Trash2 size={12} />
-                                </button>
-                            )}
-
-                            {/* Image */}
-                            <img
-                                src={imageUrl}
-                                alt={file.image?.path || 'Push notification image'}
-                                className={`h-28 w-full object-cover transition-all duration-200 ${
-                                    isSelected ? 'opacity-90' : 'group-hover:opacity-80'
+                        return (
+                            <div
+                                key={file.id}
+                                className={`group relative cursor-pointer overflow-hidden rounded-lg border-2 transition-all duration-200 hover:shadow-lg ${
+                                    isSelected
+                                        ? 'border-blue-500 shadow-md ring-2 ring-blue-500 ring-offset-2'
+                                        : 'border-gray-200 hover:border-gray-300'
                                 }`}
-                                loading="lazy"
-                                onError={(e) => {
-                                    const target = e.target as HTMLImageElement;
-                                    target.src =
-                                        'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIgcnk9IjIiLz48Y2lyY2xlIGN4PSI5IiBjeT0iOSIgcj0iMiIvPjxwYXRoIGQ9Im0yMSAxNS01LTUtNSA1Ii8+PC9zdmc+';
-                                    target.alt = 'Image failed to load';
-                                }}
-                            />
+                                onClick={() => handleImageSelect(imageUrl, file.id)}
+                            >
+                                {/* Selected Indicator */}
+                                {isSelected && (
+                                    <div className="absolute top-2 left-2 z-10 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white shadow-sm">
+                                        <CheckIcon size={14} />
+                                    </div>
+                                )}
 
-                            {/* Image Info Overlay */}
-                            <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-2">
-                                <div className="flex items-center justify-between text-[10px] text-white">
-                                    <span className="truncate pr-1 font-medium" title={file.image?.path}>
-                                        {file.image?.path || 'Untitled'}
-                                    </span>
-                                    <ImageIcon className="h-3 w-3 flex-shrink-0 opacity-75" />
+                                {/* Delete Button */}
+                                {(isSelected || true) && (
+                                    <button
+                                        onClick={(e) => {
+                                            e.stopPropagation();
+                                            handleDelete(file.id, file.image?.path);
+                                        }}
+                                        className="border-border absolute top-1 right-1 z-10 flex h-6 w-6 items-center justify-center rounded-full border bg-white/95 text-red-500 shadow-sm transition-all duration-200 hover:bg-red-50 hover:text-red-700 focus:ring-2 focus:ring-red-500 focus:ring-offset-1 focus:outline-none"
+                                    >
+                                        <Trash2 size={12} />
+                                    </button>
+                                )}
+
+                                {/* Image */}
+                                <img
+                                    src={imageUrl}
+                                    alt={file.image?.path || 'Push notification image'}
+                                    className={`h-28 w-full object-cover transition-all duration-200 ${
+                                        isSelected ? 'opacity-90' : 'group-hover:opacity-80'
+                                    }`}
+                                    loading="lazy"
+                                    onError={(e) => {
+                                        const target = e.target as HTMLImageElement;
+                                        target.src =
+                                            'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIGZpbGw9Im5vbmUiIHN0cm9rZT0iY3VycmVudENvbG9yIiBzdHJva2Utd2lkdGg9IjIiIHN0cm9rZS1saW5lY2FwPSJyb3VuZCIgc3Ryb2tlLWxpbmVqb2luPSJyb3VuZCI+PHJlY3QgeD0iMyIgeT0iMyIgd2lkdGg9IjE4IiBoZWlnaHQ9IjE4IiByeD0iMiIgcnk9IjIiLz48Y2lyY2xlIGN4PSI5IiBjeT0iOSIgcj0iMiIvPjxwYXRoIGQ9Im0yMSAxNS01LTUtNSA1Ii8+PC9zdmc+';
+                                        target.alt = 'Image failed to load';
+                                    }}
+                                />
+
+                                {/* Image Info Overlay */}
+                                <div className="absolute right-0 bottom-0 left-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent p-2">
+                                    <div className="flex items-center justify-between text-[10px] text-white">
+                                        <span className="truncate pr-1 font-medium" title={file.image?.path}>
+                                            {file.image?.path || 'Untitled'}
+                                        </span>
+                                        <ImageIcon className="h-3 w-3 flex-shrink-0 opacity-75" />
+                                    </div>
                                 </div>
+
+                                {/* Upload Status Overlay */}
+                                {isUploading && file.id === selectedImageId && (
+                                    <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50">
+                                        <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
+                                    </div>
+                                )}
                             </div>
+                        );
+                    })}
 
-                            {/* Upload Status Overlay */}
-                            {isUploading && file.id === selectedImageId && (
-                                <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50">
-                                    <div className="h-6 w-6 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                                </div>
-                            )}
+                    {/* Empty State */}
+                    {(!data?.image_push_notifications || data.image_push_notifications.length === 0) && !isLoading && (
+                        <div className="col-span-full flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-12 text-gray-500">
+                            <ImageIcon className="mb-3 h-12 w-12 opacity-50" />
+                            <p className="mb-1 text-sm font-medium">No images uploaded yet</p>
+                            <p className="text-xs text-gray-400">Upload your first image to get started</p>
                         </div>
-                    );
-                })}
-
-                {/* Empty State */}
-                {(!data?.image_push_notifications || data.image_push_notifications.length === 0) && !isLoading && (
-                    <div className="col-span-full flex flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-200 py-12 text-gray-500">
-                        <ImageIcon className="mb-3 h-12 w-12 opacity-50" />
-                        <p className="mb-1 text-sm font-medium">No images uploaded yet</p>
-                        <p className="text-xs text-gray-400">Upload your first image to get started</p>
-                    </div>
-                )}
-            </div>
+                    )}
+                </div>
+            )}
 
             {/* Image Count Info */}
             {data?.image_push_notifications && data.image_push_notifications.length > 0 && (
