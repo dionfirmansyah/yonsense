@@ -65,29 +65,33 @@ const CustomPushNotificationPage: React.FC = () => {
         };
     }, []);
 
-    const handleSaveTemplates = useCallback(async () => {
-        if (!isFormValid) return;
+    const handleSaveTemplates = useCallback(
+        async (e: React.FormEvent<HTMLFormElement>) => {
+            e.preventDefault();
+            if (!isFormValid) return;
 
-        setIsLoading(true);
-        try {
-            await db.transact(
-                db.tx.notificationTemplates[id()].create({
-                    title: notification.title,
-                    body: notification.body,
-                    priority: notification.priority,
-                    actionUrl: notification.actionUrl,
-                    image: selectedImage,
-                }),
-            );
-            setNotification(INITIAL_NOTIFICATION_STATE);
-            setSelectedImage(null);
-            toast.success('Template notifikasi berhasil disimpan.');
-        } catch (error) {
-            toast.error('Gagal menyimpan template notifikasi. Silakan coba lagi.');
-        } finally {
-            setIsLoading(false);
-        }
-    }, [handleInputChange, selectedImage, notification]);
+            setIsLoading(true);
+            try {
+                await db.transact(
+                    db.tx.notificationTemplates[id()].create({
+                        title: notification.title,
+                        body: notification.body,
+                        priority: notification.priority,
+                        actionUrl: notification.actionUrl,
+                        image: selectedImage,
+                    }),
+                );
+                setNotification(INITIAL_NOTIFICATION_STATE);
+                setSelectedImage(null);
+                toast.success('Template notifikasi berhasil disimpan.');
+            } catch (error) {
+                toast.error('Gagal menyimpan template notifikasi. Silakan coba lagi.');
+            } finally {
+                setIsLoading(false);
+            }
+        },
+        [handleInputChange, selectedImage, notification],
+    );
 
     const handleSendNotification = useCallback(
         async (userIds: string[]) => {
@@ -213,21 +217,11 @@ const CustomPushNotificationPage: React.FC = () => {
                                 <Bell className="h-5 w-5" />
                                 <span>Create Notification</span>
                             </h2>
-                            {isFormValid() && (
-                                <Button className="ml-2" size={'sm'} onClick={handleSaveTemplates} disabled={isLoading}>
-                                    {isLoading ? (
-                                        <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                    ) : (
-                                        <Plus className="mr-2 h-4 w-4" />
-                                    )}
-                                    Save as Template
-                                </Button>
-                            )}
                         </div>
 
                         <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
                             {/* Form Fields */}
-                            <form>
+                            <form onSubmit={handleSaveTemplates}>
                                 <div className="space-y-4">
                                     <div>
                                         <label className="mb-2 block text-sm font-medium text-gray-700">
@@ -293,6 +287,16 @@ const CustomPushNotificationPage: React.FC = () => {
                                             ))}
                                         </select>
                                     </div>
+                                    {isFormValid() && (
+                                        <Button className="ml-2" size={'sm'} type="submit" disabled={isLoading}>
+                                            {isLoading ? (
+                                                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                            ) : (
+                                                <Plus className="mr-2 h-4 w-4" />
+                                            )}
+                                            Save as Template
+                                        </Button>
+                                    )}
                                 </div>
                             </form>
 

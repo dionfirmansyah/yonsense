@@ -4,7 +4,6 @@ import AppContent from '@/components/yosense/sidebar/app-content';
 import { AppSidebar } from '@/components/yosense/sidebar/app-sidebar';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { db } from '@/lib/db';
-import { waitForServiceWorker } from '@/lib/serviceWorker';
 import { ChangeEvent, useCallback, useState } from 'react';
 import { toast } from 'sonner';
 import UserTable from '../user-table';
@@ -50,8 +49,12 @@ export default function TemplatePage({}: PageProps) {
         notificationTemplates: {},
     });
     const templates = data?.notificationTemplates;
-
-    waitForServiceWorker(1000);
+    const processedTemplates =
+        templates?.map((template) => ({
+            ...template,
+            createdAt: template.createdAt ? new Date(template.createdAt).toISOString() : undefined,
+            updatedAt: template.updatedAt ? new Date(template.updatedAt).toISOString() : undefined,
+        })) || [];
 
     // Validation helpers
     const isFormValid = useCallback((): boolean => {
@@ -86,8 +89,6 @@ export default function TemplatePage({}: PageProps) {
                     }),
                 });
 
-                console.log('ini notifikasi url', notification.actionUrl);
-
                 const data = await res.json();
 
                 if (!res.ok) throw new Error(data.error || 'Failed to send');
@@ -98,6 +99,7 @@ export default function TemplatePage({}: PageProps) {
                 setNotification(INITIAL_NOTIFICATION_STATE);
                 setSelectedImage(null);
                 setSelectedUsers([]);
+                setSelectedTemplateId(null);
             } catch (err) {
                 setError('Gagal mengirim notifikasi. Silakan coba lagi.');
                 console.error('Send notification error:', err);
@@ -156,7 +158,7 @@ export default function TemplatePage({}: PageProps) {
                 <div className="flex flex-col gap-4 rounded-lg border bg-gray-50 p-4">
                     {/* Choice Templates */}
                     <NotificationTemplateCard
-                        templates={templates || []}
+                        templates={processedTemplates}
                         onSelectTemplate={handleSelectTemplate}
                         selectedTemplateId={selectedTemplateId || undefined}
                     />

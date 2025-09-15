@@ -50,10 +50,8 @@ self.addEventListener("push", (event) => {
 
 /* ---- Handle Notification Click ---- */
 self.addEventListener("notificationclick", (event) => {
-  console.log("[SW] Notification clicked:", event.notification);
 
   const targetUrl = event.notification.data?.url || "/";
-  console.log("[SW] Target URL from notification:", targetUrl);
 
   event.notification.close();
 
@@ -63,24 +61,20 @@ self.addEventListener("notificationclick", (event) => {
       if (!absoluteUrl.startsWith("http")) {
         absoluteUrl = self.location.origin + targetUrl;
       }
-      console.log("[SW] Final URL to open:", absoluteUrl);
 
       const allClients = await clients.matchAll({
         type: "window",
         includeUncontrolled: true,
       });
 
-      console.log("[SW] Existing clients:", allClients.map((c) => c.url));
 
       for (const client of allClients) {
         if (client.url.startsWith(absoluteUrl) && "focus" in client) {
-          console.log("[SW] Focusing existing client:", client.url);
           return client.focus();
         }
       }
 
       if (clients.openWindow) {
-        console.log("[SW] Opening new window:", absoluteUrl);
         return clients.openWindow(absoluteUrl);
       } else {
         console.warn("[SW] clients.openWindow not supported");
@@ -91,7 +85,4 @@ self.addEventListener("notificationclick", (event) => {
 
 
 
-// Handle notification close (optional)
-self.addEventListener('notificationclose', (event) => {
-  console.log('Notification closed:', event);
-});
+
