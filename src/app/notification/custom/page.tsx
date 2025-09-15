@@ -41,7 +41,7 @@ const INITIAL_NOTIFICATION_STATE: NotificationData = {
     priority: 'normal',
 };
 
-const customPushNotificationPage: React.FC = () => {
+const CustomPushNotificationPage: React.FC = () => {
     const { allProfiles, user } = useAuthUser();
 
     const [notification, setNotification] = useState<NotificationData>(INITIAL_NOTIFICATION_STATE);
@@ -340,4 +340,4 @@ const customPushNotificationPage: React.FC = () => {
     );
 };
 
-export default customPushNotificationPage;
+export default CustomPushNotificationPage;
