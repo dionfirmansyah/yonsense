@@ -46,12 +46,14 @@ export async function POST(req: NextRequest) {
                 return NextResponse.json({ error: 'Missing required fields: title, body, userIds' }, { status: 400 });
             }
 
+            console.log('ini action url', actionUrl);
+
             // Buat payload notifikasi
             const payload = JSON.stringify({
                 title,
                 body: message,
                 data: {
-                    url: actionUrl || '/',
+                    url: actionUrl,
                     priority,
                     timestamp: Date.now(),
                 },

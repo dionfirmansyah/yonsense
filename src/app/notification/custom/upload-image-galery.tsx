@@ -275,6 +275,7 @@ export default function UploadImageGallery({
                         <Button
                             variant="outline"
                             onClick={() => {
+                                setSelectedImageId(null);
                                 onSelect('');
                             }}
                         >

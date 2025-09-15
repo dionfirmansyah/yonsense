@@ -9,11 +9,11 @@ import { AppSidebar } from '@/components/yosense/sidebar/app-sidebar';
 import YonLogo from '@/components/yosense/yon-logo';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { db } from '@/lib/db';
-import { createInitial } from '@/lib/utils';
 import { id } from '@instantdb/react';
-import { Bell, Eye, Loader2, Plus, Send, Trash2, Users } from 'lucide-react';
+import { Bell, Loader2, Plus } from 'lucide-react';
 import { ChangeEvent, useCallback, useState } from 'react';
 import { toast } from 'sonner';
+import UserTable from '../user-table';
 import UploadImageGallery from './upload-image-galery';
 
 // TypeScript Interfaces
@@ -41,7 +41,7 @@ const INITIAL_NOTIFICATION_STATE: NotificationData = {
     priority: 'normal',
 };
 
-const PushNotificationManager: React.FC = () => {
+const customPushNotificationPage: React.FC = () => {
     const { allProfiles, user } = useAuthUser();
 
     const [notification, setNotification] = useState<NotificationData>(INITIAL_NOTIFICATION_STATE);
@@ -65,16 +65,29 @@ const PushNotificationManager: React.FC = () => {
         };
     }, []);
 
-    const handleSelectUser = useCallback((userId: string) => {
-        setSelectedUsers((prev) => (prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]));
-    }, []);
+    const handleSaveTemplates = useCallback(async () => {
+        if (!isFormValid) return;
 
-    const handleSelectAll = useCallback(() => {
-        if (!allProfiles) return;
-
-        const allUserIds = allProfiles.map((user) => user.userId);
-        setSelectedUsers(selectedUsers.length === allProfiles.length ? [] : allUserIds);
-    }, [allProfiles, selectedUsers.length]);
+        setIsLoading(true);
+        try {
+            await db.transact(
+                db.tx.notificationTemplates[id()].create({
+                    title: notification.title,
+                    body: notification.body,
+                    priority: notification.priority,
+                    actionUrl: notification.actionUrl,
+                    image: selectedImage,
+                }),
+            );
+            setNotification(INITIAL_NOTIFICATION_STATE);
+            setSelectedImage(null);
+            toast.success('Template notifikasi berhasil disimpan.');
+        } catch (error) {
+            toast.error('Gagal menyimpan template notifikasi. Silakan coba lagi.');
+        } finally {
+            setIsLoading(false);
+        }
+    }, [handleInputChange, selectedImage, notification]);
 
     const handleSendNotification = useCallback(
         async (userIds: string[]) => {
@@ -114,29 +127,16 @@ const PushNotificationManager: React.FC = () => {
         [isFormValid, handleInputChange, selectedImage, notification],
     );
 
-    const handleSaveTemplates = useCallback(async () => {
-        if (!isFormValid) return;
+    const handleSelectUser = useCallback((userId: string) => {
+        setSelectedUsers((prev) => (prev.includes(userId) ? prev.filter((id) => id !== userId) : [...prev, userId]));
+    }, []);
 
-        setIsLoading(true);
-        try {
-            await db.transact(
-                db.tx.notificationTemplates[id()].create({
-                    title: notification.title,
-                    body: notification.body,
-                    priority: notification.priority,
-                    actionUrl: notification.actionUrl,
-                    image: selectedImage,
-                }),
-            );
-            setNotification(INITIAL_NOTIFICATION_STATE);
-            setSelectedImage(null);
-            toast.success('Template notifikasi berhasil disimpan.');
-        } catch (error) {
-            toast.error('Gagal menyimpan template notifikasi. Silakan coba lagi.');
-        } finally {
-            setIsLoading(false);
-        }
-    }, [handleInputChange, selectedImage]);
+    const handleSelectAll = useCallback(() => {
+        if (!allProfiles) return;
+
+        const allUserIds = allProfiles.map((user) => user.userId);
+        setSelectedUsers(selectedUsers.length === allProfiles.length ? [] : allUserIds);
+    }, [allProfiles, selectedUsers.length]);
 
     const handleSendToSingle = useCallback(
         (userId: string) => {
@@ -315,128 +315,14 @@ const PushNotificationManager: React.FC = () => {
                     </div>
 
                     {/* Users Table */}
-                    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-lg">
-                        <div className="border-b border-gray-200 p-6">
-                            <div className="flex items-center justify-between">
-                                <h2 className="flex items-center space-x-2 text-xl font-semibold text-gray-900">
-                                    <Users className="h-5 w-5" />
-                                    <span>Daftar Pengguna ({allProfiles?.length})</span>
-                                </h2>
-                                <div className="flex items-center space-x-3">
-                                    <span className="text-sm text-gray-600">
-                                        {selectedUsers.length} dari {allProfiles?.length} dipilih
-                                    </span>
-                                    <button
-                                        type="button"
-                                        onClick={handleSendToSelected}
-                                        disabled={selectedUsers.length === 0 || !isFormValid() || isLoading}
-                                        className="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-400"
-                                    >
-                                        {isLoading ? (
-                                            <>
-                                                <div className="mr-2 h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent"></div>
-                                                Mengirim...
-                                            </>
-                                        ) : (
-                                            <>
-                                                <Send className="mr-2 h-4 w-4" />
-                                                Kirim ke Terpilih
-                                            </>
-                                        )}
-                                    </button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div className="overflow-x-auto">
-                            <table className="w-full">
-                                <thead className="bg-gray-50">
-                                    <tr>
-                                        <th className="px-6 py-4 text-left">
-                                            <input
-                                                type="checkbox"
-                                                checked={
-                                                    selectedUsers.length === allProfiles?.length &&
-                                                    allProfiles?.length > 0
-                                                }
-                                                onChange={handleSelectAll}
-                                                className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                                aria-label="Pilih semua pengguna"
-                                            />
-                                        </th>
-                                        <th className="px-6 py-4 text-left text-sm font-medium text-gray-900">
-                                            Pengguna
-                                        </th>
-                                        <th className="px-6 py-4 text-center text-sm font-medium text-gray-900">
-                                            Aksi
-                                        </th>
-                                    </tr>
-                                </thead>
-                                <tbody className="divide-y divide-gray-200">
-                                    {allProfiles?.map((user) => (
-                                        <tr key={user.id} className="transition-colors hover:bg-gray-50">
-                                            <td className="px-6 py-4">
-                                                <input
-                                                    type="checkbox"
-                                                    checked={selectedUsers.includes(user.userId)}
-                                                    onChange={() => handleSelectUser(user.userId)}
-                                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                                                    aria-label={`Pilih ${user.displayName}`}
-                                                />
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center space-x-3">
-                                                    <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
-                                                        <span className="text-sm font-medium text-blue-600">
-                                                            {createInitial(user.displayName)}
-                                                        </span>
-                                                    </div>
-                                                    <div className="min-w-0 flex-1">
-                                                        <div className="truncate font-medium text-gray-900">
-                                                            {user.displayName}
-                                                        </div>
-                                                        <div className="truncate text-sm text-gray-500">
-                                                            {user.email}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </td>
-                                            <td className="px-6 py-4">
-                                                <div className="flex items-center justify-center space-x-2">
-                                                    <button
-                                                        type="button"
-                                                        onClick={() => handleSendToSingle(user.userId)}
-                                                        disabled={!isFormValid() || isLoading}
-                                                        className="rounded-lg p-2 text-blue-600 transition-colors hover:bg-blue-100 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:text-gray-400"
-                                                        title="Kirim notifikasi"
-                                                        aria-label={`Kirim notifikasi ke ${user.displayName}`}
-                                                    >
-                                                        <Send className="h-4 w-4" />
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className="rounded-lg p-2 text-green-600 transition-colors hover:bg-green-100 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                                                        title="Lihat detail"
-                                                        aria-label={`Lihat detail ${user.displayName}`}
-                                                    >
-                                                        <Eye className="h-4 w-4" />
-                                                    </button>
-                                                    <button
-                                                        type="button"
-                                                        className="rounded-lg p-2 text-red-600 transition-colors hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:outline-none"
-                                                        title="Hapus pengguna"
-                                                        aria-label={`Hapus ${user.displayName}`}
-                                                    >
-                                                        <Trash2 className="h-4 w-4" />
-                                                    </button>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                    ))}
-                                </tbody>
-                            </table>
-                        </div>
-                    </div>
+                    <UserTable
+                        selectedUsers={selectedUsers}
+                        handleSelectUser={handleSelectUser}
+                        handleSelectAll={handleSelectAll}
+                        handleSendToSingle={handleSendToSingle}
+                        handleSendToSelected={handleSendToSelected}
+                        isFormValid={isFormValid()}
+                    />
 
                     {/* Status Alert */}
                     {selectedUsers.length > 0 && isFormValid() && (
@@ -454,4 +340,4 @@ const PushNotificationManager: React.FC = () => {
     );
 };
 
-export default PushNotificationManager;
+export default customPushNotificationPage;

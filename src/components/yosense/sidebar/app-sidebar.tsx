@@ -53,6 +53,10 @@ const data = {
                     title: 'Custom',
                     url: '/notification/custom',
                 },
+                {
+                    title: 'Templates',
+                    url: '/notification/templates',
+                },
             ],
         },
     ],
