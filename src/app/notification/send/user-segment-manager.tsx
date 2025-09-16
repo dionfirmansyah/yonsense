@@ -8,6 +8,7 @@ import {
     DialogTitle,
     DialogTrigger,
 } from '@/components/ui/dialog';
+import { Input } from '@/components/ui/input';
 import { db, Segment, SegmentUser } from '@/lib/db';
 import { createInitial } from '@/lib/utils';
 import { id } from '@instantdb/react';
@@ -202,23 +203,16 @@ export default function UserSegmentManager({
 
     return (
         <div className="space-y-4">
-            <div className="flex items-center justify-between">
-                <h3 className="font-medium text-gray-900">Pilih Target Segment</h3>
-                <span className="text-sm text-gray-500">
-                    {filteredSegments.length} dari {segments.length} segment
-                </span>
-            </div>
-
             {/* Search Bar */}
             <div className="relative">
                 <div className="relative">
                     <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
-                    <input
+                    <Input
                         type="text"
-                        placeholder="Cari segment berdasarkan nama, deskripsi, atau kriteria..."
+                        placeholder="Cari segment berdasarkan nama, atau deskripsi.."
+                        className="pl-10"
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 py-2 pr-10 pl-10 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
                     />
                     {searchTerm && (
                         <button

@@ -124,6 +124,7 @@ export default function TemplatePage({}: PageProps) {
                         body: notification.body,
                         userIds,
                         actionUrl: notification.actionUrl,
+                        senderId: user?.id,
                         priority: notification.priority,
                         image: selectedImage,
                     }),
@@ -252,7 +253,7 @@ export default function TemplatePage({}: PageProps) {
                     {/* Target Mode Selection */}
 
                     <div className="mb-4">
-                        <h3 className="mb-3 font-medium text-gray-900">Pilih Mode Target</h3>
+                        <h3 className="mb-3 font-medium text-gray-900">Pilih Target</h3>
                         <div className="flex gap-3">
                             <Button
                                 variant="outline"

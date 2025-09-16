@@ -348,25 +348,16 @@ export default function NotificationTemplateCard({
 
                 {/* Create Template Dialog - Mobile Responsive */}
                 <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                    <DialogContent className="h-[95vh] w-[95vw] overflow-y-auto rounded-lg p-0 sm:h-[90vh] sm:w-full sm:max-w-5xl sm:rounded-2xl">
-                        <DialogHeader className="p-4 sm:px-6 sm:pt-6">
+                    <DialogContent className="max-h-[95vh] w-full max-w-6xl overflow-hidden">
+                        <DialogHeader className="mb-3 sm:pt-6">
                             <DialogTitle className="text-lg font-semibold sm:text-xl">Buat Template Baru</DialogTitle>
-                            <DialogDescription className="text-sm sm:text-base">
+                            <DialogDescription className="border-b pb-2 text-sm sm:text-base">
                                 Buat template notifikasi baru untuk digunakan nanti.
                             </DialogDescription>
                         </DialogHeader>
 
-                        {/* Body - Mobile Layout */}
-                        <div className="p-4">
-                            <div className="mb-4 flex items-center justify-between sm:mb-6">
-                                <h2 className="flex items-center gap-2 text-base font-semibold text-gray-900 sm:text-lg">
-                                    <Bell className="h-4 w-4 text-blue-500 sm:h-5 sm:w-5" />
-                                    <span>Create Notification</span>
-                                </h2>
-                            </div>
-
-                            {/* Mobile: Stack vertically, Desktop: Side by side */}
-                            <div className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-8 lg:space-y-0">
+                        <div className="flex h-full max-h-[75vh] gap-6 overflow-hidden px-2">
+                            <div className="w-full overflow-y-auto border-r p-1">
                                 {/* Form Fields */}
                                 <form onSubmit={handleSaveTemplates} className="space-y-4 sm:space-y-6">
                                     <div>

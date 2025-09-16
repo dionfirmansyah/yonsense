@@ -1,7 +1,9 @@
 // src/app/api/push/route.ts - Route untuk multiple users
 import { authenticateAndAuthorize } from '@/lib/auth';
+import { dbAdmin } from '@/lib/db';
 import { env } from '@/lib/env';
 import { sendNotificationToUser } from '@/lib/push-notifications';
+import { id } from '@instantdb/admin';
 import { NextRequest, NextResponse } from 'next/server';
 import webpush from 'web-push';
 
@@ -10,8 +12,10 @@ interface PushDataMultiple {
     body: string;
     userIds: string[];
     actionUrl?: string;
+    senderId: string;
     priority?: 'low' | 'normal' | 'high';
     image?: string; // Base64 atau URL gambar
+    tag?: string;
 }
 
 interface PushDataSingle {
@@ -19,8 +23,10 @@ interface PushDataSingle {
     body: string;
     userId: string;
     actionUrl?: string;
+    senderId: string;
     priority?: 'low' | 'normal' | 'high';
     image?: string;
+    tag?: string;
 }
 
 // Set VAPID details
@@ -40,13 +46,20 @@ export async function POST(req: NextRequest) {
         const isMultiple = 'userIds' in body;
 
         if (isMultiple) {
-            const { title, body: message, userIds, actionUrl, priority = 'normal', image } = body as PushDataMultiple;
+            const {
+                title,
+                body: message,
+                userIds,
+                actionUrl,
+                senderId,
+                priority = 'normal',
+                image,
+                tag,
+            } = body as PushDataMultiple;
 
             if (!title || !message || !userIds || userIds.length === 0) {
                 return NextResponse.json({ error: 'Missing required fields: title, body, userIds' }, { status: 400 });
             }
-
-            console.log('ini action url', actionUrl);
 
             // Buat payload notifikasi
             const payload = JSON.stringify({
@@ -61,10 +74,29 @@ export async function POST(req: NextRequest) {
             });
 
             // Kirim ke semua user secara parallel
-            const results = await Promise.allSettled(userIds.map((userId) => sendNotificationToUser(userId, payload)));
+            const results = await Promise.allSettled(
+                userIds.map((userId) => {
+                    sendNotificationToUser(userId, payload);
+                }),
+            );
 
+            userIds.forEach(async (userId) => {
+                await dbAdmin.transact([
+                    dbAdmin.tx.notifications[id()].create({
+                        title,
+                        body: message,
+                        receiverId: userId,
+                        senderId,
+                        image,
+                        actionUrl,
+                        priority,
+                        createdAt: new Date(),
+                        tag,
+                    }),
+                ]);
+            });
             // Hitung statistik
-            const successful = results.filter((result) => result.status === 'fulfilled' && result.value.success).length;
+            const successful = results.filter((result) => result.status === 'fulfilled').length;
             const failed = results.length - successful;
 
             return NextResponse.json({
@@ -78,7 +110,16 @@ export async function POST(req: NextRequest) {
             });
         } else {
             // Handle single user (backward compatibility)
-            const { title, body: message, userId, actionUrl, priority = 'normal', image } = body as PushDataSingle;
+            const {
+                title,
+                body: message,
+                userId,
+                senderId,
+                actionUrl,
+                priority = 'normal',
+                image,
+                tag,
+            } = body as PushDataSingle;
 
             if (!title || !message || !userId) {
                 return NextResponse.json({ error: 'Missing required fields: title, body, userId' }, { status: 400 });
@@ -95,9 +136,23 @@ export async function POST(req: NextRequest) {
                     timestamp: Date.now(),
                 },
                 ...(image && { image }),
+                ...(tag && { tag }),
             });
 
             const result = await sendNotificationToUser(userId, payload);
+            await dbAdmin.transact([
+                dbAdmin.tx.notifications[id()].create({
+                    title,
+                    body: message,
+                    receiverId: userId,
+                    senderId,
+                    image,
+                    actionUrl,
+                    priority,
+                    createdAt: new Date(),
+                    tag,
+                }),
+            ]);
 
             if (result.success) {
                 return NextResponse.json({
