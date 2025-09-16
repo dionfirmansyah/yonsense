@@ -35,6 +35,7 @@ const _schema = i.schema({
         notifications: i.entity({
             title: i.string(),
             body: i.string(),
+            category: i.string().indexed().optional(),
             tag: i.string().optional(),
             priority: i.string().optional(),
             actionUrl: i.string().optional(),
@@ -48,11 +49,15 @@ const _schema = i.schema({
         notificationTemplates: i.entity({
             title: i.string(),
             body: i.string(),
+            category: i.string().indexed().optional(),
             priority: i.string().optional(),
             actionUrl: i.string().optional(),
             image: i.string().optional(),
             createdAt: i.date().optional(),
             updatedAt: i.date().optional(),
+        }),
+        notification_categories: i.entity({
+            name: i.string(),
         }),
         segment: i.entity({
             name: i.string().indexed(),
@@ -82,7 +87,7 @@ const _schema = i.schema({
                 on: 'image_push_notifications',
                 has: 'one',
                 label: 'image',
-                required: true,
+                required: false,
                 onDelete: 'cascade',
             },
             reverse: {

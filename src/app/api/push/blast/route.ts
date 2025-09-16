@@ -16,6 +16,7 @@ interface PushDataMultiple {
     priority?: 'low' | 'normal' | 'high';
     image?: string; // Base64 atau URL gambar
     tag?: string;
+    category: string;
 }
 
 interface PushDataSingle {
@@ -27,6 +28,7 @@ interface PushDataSingle {
     priority?: 'low' | 'normal' | 'high';
     image?: string;
     tag?: string;
+    category: string;
 }
 
 // Set VAPID details
@@ -54,8 +56,11 @@ export async function POST(req: NextRequest) {
                 senderId,
                 priority = 'normal',
                 image,
+                category,
                 tag,
             } = body as PushDataMultiple;
+
+            console.log('Kategory', category);
 
             if (!title || !message || !userIds || userIds.length === 0) {
                 return NextResponse.json({ error: 'Missing required fields: title, body, userIds' }, { status: 400 });
@@ -92,6 +97,7 @@ export async function POST(req: NextRequest) {
                         priority,
                         createdAt: new Date(),
                         tag,
+                        category,
                     }),
                 ]);
             });
@@ -110,6 +116,7 @@ export async function POST(req: NextRequest) {
             });
         } else {
             // Handle single user (backward compatibility)
+
             const {
                 title,
                 body: message,
@@ -119,7 +126,10 @@ export async function POST(req: NextRequest) {
                 priority = 'normal',
                 image,
                 tag,
+                category,
             } = body as PushDataSingle;
+
+            console.log('Kategory', category);
 
             if (!title || !message || !userId) {
                 return NextResponse.json({ error: 'Missing required fields: title, body, userId' }, { status: 400 });
@@ -151,6 +161,7 @@ export async function POST(req: NextRequest) {
                     priority,
                     createdAt: new Date(),
                     tag,
+                    category,
                 }),
             ]);
 

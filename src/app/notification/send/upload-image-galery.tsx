@@ -62,14 +62,12 @@ export default function UploadImageGallery({
         const file = event.target.files?.[0];
         if (!file) return;
 
-        // Clear previous errors
         setUploadError(null);
 
-        // Validate file
         const validationError = validateFile(file);
         if (validationError) {
             setUploadError(validationError);
-            event.target.value = ''; // Clear input
+            event.target.value = '';
             return;
         }
 
@@ -78,22 +76,20 @@ export default function UploadImageGallery({
         try {
             const imageId = id();
 
-            // Create the record first
-            await db.transact(
+            // 1. Upload file ke $files
+            const fileData = await db.storage.uploadFile(file.name, file);
+            const fileId = fileData.data.id;
+
+            // 2. Buat record image_push_notifications dengan link ke file
+            await db.transact([
                 db.tx.image_push_notifications[imageId].create({
                     userId,
                     createdAt: new Date().toISOString(),
                 }),
-            );
-
-            // Upload file
-            const { data: fileData } = await db.storage.uploadFile(file.name, file);
-
-            await db.transact(
                 db.tx.image_push_notifications[imageId].link({
-                    image: fileData.id,
+                    image: fileId,
                 }),
-            );
+            ]);
 
             autoSelectImage(imageId);
         } catch (err) {
@@ -101,7 +97,7 @@ export default function UploadImageGallery({
             setUploadError(err instanceof Error ? err.message : 'Failed to upload image');
         } finally {
             setIsUploading(false);
-            event.target.value = ''; // Clear input
+            event.target.value = '';
         }
     };
 

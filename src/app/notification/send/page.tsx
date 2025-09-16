@@ -20,6 +20,7 @@ interface NotificationData {
     image: File | null;
     actionUrl: string;
     priority: 'low' | 'normal' | 'high';
+    category: string;
 }
 
 type NotificationPriority = 'low' | 'normal' | 'high';
@@ -31,6 +32,7 @@ const INITIAL_NOTIFICATION_STATE: NotificationData = {
     image: null,
     actionUrl: '',
     priority: 'normal',
+    category: 'custom',
 };
 
 export default function TemplatePage({}: PageProps) {
@@ -66,6 +68,8 @@ export default function TemplatePage({}: PageProps) {
             })) || []
         );
     }, [templateData]);
+
+    console.log('templates', templates);
 
     const segments = useMemo(() => {
         return segmentData?.segment || [];
@@ -127,6 +131,7 @@ export default function TemplatePage({}: PageProps) {
                         senderId: user?.id,
                         priority: notification.priority,
                         image: selectedImage,
+                        category: notification.category,
                     }),
                 });
 
@@ -186,6 +191,7 @@ export default function TemplatePage({}: PageProps) {
             image: null,
             actionUrl: template.actionUrl || '',
             priority: template.priority,
+            category: template.category,
         });
         setSelectedImage(template.image || null);
         setSelectedTemplateId(template.id);
