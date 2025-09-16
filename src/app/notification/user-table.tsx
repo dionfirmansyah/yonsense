@@ -1,8 +1,10 @@
 'use client';
 
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { createInitial } from '@/lib/utils';
-import { Eye, Send, Trash2, Users } from 'lucide-react';
+
+import { Send, Users } from 'lucide-react';
 
 interface UserTableProps {
     selectedUsers: string[];
@@ -88,11 +90,13 @@ export default function UserTable({
                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="flex items-center space-x-3">
-                                        <div className="flex h-10 w-10 items-center justify-center rounded-full bg-blue-100">
-                                            <span className="text-sm font-medium text-blue-600">
+                                        <Avatar className="h-8 w-8 rounded-full">
+                                            <AvatarImage src={user.picture} alt={user.displayName} />
+                                            <AvatarFallback className="rounded-full bg-gray-300 p-2 text-center text-xs">
                                                 {createInitial(user.displayName)}
-                                            </span>
-                                        </div>
+                                            </AvatarFallback>
+                                        </Avatar>
+
                                         <div className="min-w-0 flex-1">
                                             <div className="truncate font-medium text-gray-900">{user.displayName}</div>
                                             <div className="truncate text-sm text-gray-500">{user.email}</div>
@@ -104,28 +108,12 @@ export default function UserTable({
                                         <button
                                             type="button"
                                             onClick={() => handleSendToSingle(user.userId)}
-                                            disabled={isLoading}
+                                            disabled={isLoading || !isFormValid}
                                             className="rounded-lg p-2 text-blue-600 transition-colors hover:bg-blue-100 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:text-gray-400"
                                             title="Kirim notifikasi"
                                             aria-label={`Kirim notifikasi ke ${user.displayName}`}
                                         >
                                             <Send className="h-4 w-4" />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="rounded-lg p-2 text-green-600 transition-colors hover:bg-green-100 focus:ring-2 focus:ring-green-500 focus:outline-none"
-                                            title="Lihat detail"
-                                            aria-label={`Lihat detail ${user.displayName}`}
-                                        >
-                                            <Eye className="h-4 w-4" />
-                                        </button>
-                                        <button
-                                            type="button"
-                                            className="rounded-lg p-2 text-red-600 transition-colors hover:bg-red-100 focus:ring-2 focus:ring-red-500 focus:outline-none"
-                                            title="Hapus pengguna"
-                                            aria-label={`Hapus ${user.displayName}`}
-                                        >
-                                            <Trash2 className="h-4 w-4" />
                                         </button>
                                     </div>
                                 </td>

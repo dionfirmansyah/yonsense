@@ -255,111 +255,106 @@ export default function TemplatePage({}: PageProps) {
                     )}
 
                     {/* Template Selection */}
-                    <div className="rounded-lg border bg-white p-6">
-                        <NotificationTemplateCard
-                            templates={templates}
-                            onSelectTemplate={handleSelectTemplate}
-                            selectedTemplateId={selectedTemplateId || undefined}
-                        />
-                    </div>
+
+                    <NotificationTemplateCard
+                        templates={templates}
+                        onSelectTemplate={handleSelectTemplate}
+                        selectedTemplateId={selectedTemplateId || undefined}
+                    />
 
                     {/* Target Mode Selection */}
-                    <div className="rounded-lg border bg-white p-6">
-                        <div className="mb-4">
-                            <h3 className="mb-3 font-medium text-gray-900">Pilih Mode Target</h3>
-                            <div className="flex gap-3">
-                                <button
-                                    onClick={() => handleTargetModeChange('individual')}
-                                    className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${
-                                        targetMode === 'individual'
-                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                            : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                                    }`}
-                                >
-                                    <Users className="h-4 w-4" />
-                                    Individual Users
-                                </button>
-                                <button
-                                    onClick={() => handleTargetModeChange('segment')}
-                                    className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${
-                                        targetMode === 'segment'
-                                            ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                            : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                                    }`}
-                                >
-                                    <Target className="h-4 w-4" />
-                                    User Segments
-                                </button>
-                            </div>
-                        </div>
 
-                        {/* Segment Selection */}
-                        {targetMode === 'segment' && (
-                            <UserSegmentManager
-                                segments={segments}
-                                segmentUsers={segmentUsers}
-                                profiles={allProfiles ?? []}
-                                onSelectSegment={handleSelectSegment}
-                                selectedSegmentIds={selectedSegments.map((s) => s.id)}
-                                multiSelect={true}
-                            />
-                        )}
+                    <div className="mb-4">
+                        <h3 className="mb-3 font-medium text-gray-900">Pilih Mode Target</h3>
+                        <div className="flex gap-3">
+                            <button
+                                onClick={() => handleTargetModeChange('individual')}
+                                className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${
+                                    targetMode === 'individual'
+                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                                }`}
+                            >
+                                <Users className="h-4 w-4" />
+                                Individual Users
+                            </button>
+                            <button
+                                onClick={() => handleTargetModeChange('segment')}
+                                className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${
+                                    targetMode === 'segment'
+                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
+                                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
+                                }`}
+                            >
+                                <Target className="h-4 w-4" />
+                                User Segments
+                            </button>
+                        </div>
                     </div>
+
+                    {/* Segment Selection */}
+                    {targetMode === 'segment' && (
+                        <UserSegmentManager
+                            segments={segments}
+                            segmentUsers={segmentUsers}
+                            profiles={allProfiles ?? []}
+                            onSelectSegment={handleSelectSegment}
+                            selectedSegmentIds={selectedSegments.map((s) => s.id)}
+                            multiSelect={true}
+                        />
+                    )}
 
                     {/* User Table - Only show in individual mode */}
                     {targetMode === 'individual' && (
-                        <div className="rounded-lg border bg-white p-6">
-                            <UserTable
-                                selectedUsers={selectedUsers}
-                                handleSelectUser={handleSelectUser}
-                                handleSelectAll={handleSelectAll}
-                                handleSendToSingle={handleSendToSingle}
-                                handleSendToSelected={handleSendToSelected}
-                                isFormValid={isFormValid()}
-                            />
-                        </div>
+                        <UserTable
+                            selectedUsers={selectedUsers}
+                            handleSelectUser={handleSelectUser}
+                            handleSelectAll={handleSelectAll}
+                            handleSendToSingle={handleSendToSingle}
+                            handleSendToSelected={handleSendToSelected}
+                            isFormValid={isFormValid()}
+                        />
                     )}
 
                     {/* Action Bar */}
-                    <div className="rounded-lg border bg-white p-6">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-4">
-                                <div className="text-sm text-gray-600">
-                                    <span className="font-medium">Target: </span>
-                                    {targetMode === 'segment' ? (
-                                        <>
-                                            {selectedSegments.length} segment ({finalTargetUsers.length} users)
-                                        </>
-                                    ) : (
-                                        <>{selectedUsers.length} individual users</>
-                                    )}
-                                </div>
-                                {selectedTemplateId && <div className="text-sm text-green-600">✓ Template dipilih</div>}
-                            </div>
 
-                            <div className="flex items-center gap-3">
-                                <Button
-                                    variant="outline"
-                                    onClick={handleResetForm}
-                                    disabled={isLoading}
-                                    className="flex items-center gap-2"
-                                >
-                                    <RefreshCw className="h-4 w-4" />
-                                    Reset
-                                </Button>
-                                <Button
-                                    onClick={handleSendToSelected}
-                                    disabled={!canSendNotification}
-                                    className="flex items-center gap-2"
-                                >
-                                    {isLoading ? (
-                                        <Loader2 className="h-4 w-4 animate-spin" />
-                                    ) : (
-                                        <Send className="h-4 w-4" />
-                                    )}
-                                    Kirim Notifikasi
-                                </Button>
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-4">
+                            <div className="text-sm text-gray-600">
+                                <span className="font-medium">Target: </span>
+                                {targetMode === 'segment' ? (
+                                    <>
+                                        {selectedSegments.length} segment ({finalTargetUsers.length} users)
+                                    </>
+                                ) : (
+                                    <>{selectedUsers.length} individual users</>
+                                )}
                             </div>
+                            {selectedTemplateId && <div className="text-sm text-green-600">✓ Template dipilih</div>}
+                        </div>
+
+                        <div className="flex items-center gap-3">
+                            <Button
+                                variant="outline"
+                                onClick={handleResetForm}
+                                disabled={isLoading}
+                                className="flex items-center gap-2"
+                            >
+                                <RefreshCw className="h-4 w-4" />
+                                Reset
+                            </Button>
+                            <Button
+                                onClick={handleSendToSelected}
+                                disabled={!canSendNotification}
+                                className="flex items-center gap-2"
+                            >
+                                {isLoading ? (
+                                    <Loader2 className="h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Send className="h-4 w-4" />
+                                )}
+                                Kirim Notifikasi
+                            </Button>
                         </div>
                     </div>
                 </div>

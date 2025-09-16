@@ -1,3 +1,4 @@
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
 import {
     Dialog,
@@ -8,7 +9,9 @@ import {
     DialogTrigger,
 } from '@/components/ui/dialog';
 import { db, Segment, SegmentUser } from '@/lib/db';
+import { createInitial } from '@/lib/utils';
 import { id } from '@instantdb/react';
+
 import { Check, Loader2, Plus, Save, Search, Trash2, Users, X } from 'lucide-react';
 import { useMemo, useState } from 'react';
 import { toast } from 'sonner';
@@ -453,17 +456,16 @@ export default function UserSegmentManager({
                                                                         )}
                                                                     </div>
                                                                 </div>
-                                                                {user.picture ? (
-                                                                    <img
+                                                                <Avatar className="h-8 w-8 rounded-full">
+                                                                    <AvatarImage
                                                                         src={user.picture}
-                                                                        alt=""
-                                                                        className="h-8 w-8 rounded-full"
+                                                                        alt={user.displayName}
                                                                     />
-                                                                ) : (
-                                                                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-200">
-                                                                        <Users className="h-4 w-4 text-gray-500" />
-                                                                    </div>
-                                                                )}
+                                                                    <AvatarFallback className="rounded-full bg-gray-300 p-2 text-center text-xs">
+                                                                        {createInitial(user.displayName)}
+                                                                    </AvatarFallback>
+                                                                </Avatar>
+
                                                                 <div className="min-w-0 flex-1">
                                                                     <p className="truncate text-sm font-medium text-gray-900">
                                                                         {user.displayName || 'No Name'}

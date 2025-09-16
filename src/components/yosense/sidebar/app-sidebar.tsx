@@ -46,16 +46,8 @@ const data = {
                     url: '/notification',
                 },
                 {
-                    title: 'Test',
-                    url: '/notification/test',
-                },
-                {
-                    title: 'Custom',
-                    url: '/notification/custom',
-                },
-                {
-                    title: 'Templates',
-                    url: '/notification/templates',
+                    title: 'Send Notification',
+                    url: '/notification/send',
                 },
             ],
         },
