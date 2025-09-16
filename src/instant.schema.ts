@@ -54,10 +54,18 @@ const _schema = i.schema({
             createdAt: i.date().optional(),
             updatedAt: i.date().optional(),
         }),
-        todos: i.entity({
-            text: i.string(),
-            done: i.boolean(),
-            createdAt: i.number(),
+        segment: i.entity({
+            name: i.string().indexed(),
+            description: i.string().optional(),
+            color: i.string().optional(),
+            createdAt: i.string().optional(),
+            updatedAt: i.string().optional(),
+        }),
+        segment_user: i.entity({
+            userId: i.string().indexed(),
+            segmentId: i.string().indexed(),
+            createdAt: i.string().optional(),
+            updatedAt: i.string().optional(),
         }),
     },
     links: {
@@ -85,11 +93,7 @@ const _schema = i.schema({
             },
         },
     },
-    rooms: {
-        todos: {
-            presence: i.entity({}),
-        },
-    },
+    rooms: {},
 });
 
 // This helps Typescript display nicer intellisense

@@ -16,8 +16,9 @@ export const dbAdmin = adminInit({
     useDateObjects: true,
 });
 
-export type Todo = InstaQLEntity<typeof schema, 'todos'>;
 export type Profile = InstaQLEntity<typeof schema, 'profiles'>;
 export type ImagePushNotification = InstaQLEntity<typeof schema, 'image_push_notifications'>;
 export type Notification = InstaQLEntity<typeof schema, 'notifications'>;
 export type NotificationTemplate = InstaQLEntity<typeof schema, 'notificationTemplates'>;
+export type Segment = InstaQLEntity<typeof schema, 'segment'>;
+export type SegmentUser = InstaQLEntity<typeof schema, 'segment_user'>;
