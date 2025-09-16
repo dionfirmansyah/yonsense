@@ -1,21 +1,13 @@
 import { Button } from '@/components/ui/button';
-import {
-    Dialog,
-    DialogContent,
-    DialogDescription,
-    DialogHeader,
-    DialogTitle,
-    DialogTrigger,
-} from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Input } from '@/components/ui/input';
 import YonLogo from '@/components/yosense/yon-logo';
 import { db, NotificationTemplate } from '@/lib/db';
 import { id } from '@instantdb/react';
 import { Bell, Check, Loader2, Plus, Search, Trash2, X } from 'lucide-react';
-import Link from 'next/link';
 import { ChangeEvent, useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import UploadImageGallery from '../upload-image-galery';
+import UploadImageGallery from './upload-image-galery';
 
 interface NotificationTemplateCardProps {
     templates: NotificationTemplate[];
@@ -96,6 +88,7 @@ export default function NotificationTemplateCard({
             toast.error('Gagal menghapus template');
         }
     };
+
     const handleSaveTemplates = useCallback(
         async (e: React.FormEvent<HTMLFormElement>) => {
             e.preventDefault();
@@ -114,6 +107,7 @@ export default function NotificationTemplateCard({
                 );
                 setNotification(INITIAL_NOTIFICATION_STATE);
                 setSelectedImage(null);
+                setIsCreateDialogOpen(false);
                 toast.success('Template notifikasi berhasil disimpan.');
             } catch (error) {
                 toast.error('Gagal menyimpan template notifikasi. Silakan coba lagi.');
@@ -121,47 +115,48 @@ export default function NotificationTemplateCard({
                 setIsLoading(false);
             }
         },
-        [handleInputChange, selectedImage, notification],
+        [isFormValid, selectedImage, notification],
     );
 
     const clearSearch = () => {
         setSearchTerm('');
     };
+
     const renderNotificationPreview = useCallback(
         () => (
-            <div className="rounded-lg border bg-gray-50 p-4">
-                <h3 className="mb-3 font-medium text-gray-900">Preview Notifikasi</h3>
-                <div className="rounded-lg border bg-white p-4 shadow-sm">
-                    <div className="flex items-start space-x-3">
+            <div className="rounded-lg border bg-gray-50 p-3 sm:p-4">
+                <h3 className="mb-3 text-sm font-medium text-gray-900 sm:text-base">Preview Notifikasi</h3>
+                <div className="rounded-lg border bg-white p-3 shadow-sm sm:p-4">
+                    <div className="flex items-start space-x-2 sm:space-x-3">
                         <div className="flex-shrink-0">
-                            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-blue-600">
-                                <Bell className="h-4 w-4 text-white" />
+                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 sm:h-8 sm:w-8">
+                                <Bell className="h-3 w-3 text-white sm:h-4 sm:w-4" />
                             </div>
                         </div>
                         <div className="flex w-full items-center justify-between">
-                            <div className="flex flex-col items-start">
-                                <p className="font-medium text-gray-900">
+                            <div className="flex min-w-0 flex-1 flex-col items-start">
+                                <p className="w-full truncate text-sm font-medium text-gray-900 sm:text-base">
                                     {notification.title.trim() || 'Judul Notifikasi'}
                                 </p>
-                                <p className="mt-1 mb-2 text-sm text-gray-600">
+                                <p className="mt-1 mb-2 line-clamp-2 text-xs text-gray-600 sm:text-sm">
                                     {notification.body.trim() || 'Pesan notifikasi akan muncul di sini...'}
                                 </p>
                             </div>
-                            <div className="flex items-center">
-                                <YonLogo className="h-8 w-8" />
+                            <div className="ml-2 flex flex-shrink-0 items-center">
+                                <YonLogo className="h-6 w-6 sm:h-8 sm:w-8" />
                             </div>
                         </div>
                     </div>
-                    <div className="min-w-0 flex-1">
+                    <div className="mt-2 min-w-0 flex-1">
                         {selectedImage && (
                             <img
                                 src={selectedImage}
                                 alt="Push Notification Image"
-                                className="h-[300px] w-full object-cover transition group-hover:opacity-80"
+                                className="h-32 w-full rounded object-cover transition group-hover:opacity-80 sm:h-48"
                             />
                         )}
                         {notification.actionUrl && (
-                            <p className="mt-1 text-xs text-blue-600">🔗 {notification.actionUrl}</p>
+                            <p className="mt-2 truncate text-xs text-blue-600">🔗 {notification.actionUrl}</p>
                         )}
                     </div>
                 </div>
@@ -173,23 +168,24 @@ export default function NotificationTemplateCard({
     return (
         <>
             <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                    <h3 className="font-medium text-gray-900">Pilih Template Notifikasi</h3>
-                    <span className="text-sm text-gray-500">
+                {/* Header - Mobile Optimized */}
+                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                    <h3 className="text-base font-medium text-gray-900 sm:text-lg">Template Notifikasi</h3>
+                    <span className="text-xs text-gray-500 sm:text-sm">
                         {filteredTemplates.length} dari {templates.length} template
                     </span>
                 </div>
 
-                {/* Search Bar */}
+                {/* Search Bar - Mobile Optimized */}
                 <div className="relative">
                     <div className="relative">
                         <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
                         <input
                             type="text"
-                            placeholder="Cari template berdasarkan judul, isi, atau prioritas..."
+                            placeholder="Cari template..."
                             value={searchTerm}
                             onChange={(e) => setSearchTerm(e.target.value)}
-                            className="w-full rounded-lg border border-gray-300 py-2 pr-10 pl-10 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                            className="w-full rounded-lg border border-gray-300 py-2.5 pr-10 pl-10 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:py-2"
                         />
                         {searchTerm && (
                             <button
@@ -202,15 +198,15 @@ export default function NotificationTemplateCard({
                     </div>
                 </div>
 
-                {/* Templates Grid */}
+                {/* Templates Grid - Mobile Responsive */}
                 {templates && templates.length > 0 ? (
                     <>
                         {filteredTemplates.length > 0 ? (
-                            <div className="grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 sm:gap-4 lg:grid-cols-3">
                                 {filteredTemplates.map((template) => (
                                     <div
                                         key={template.id}
-                                        className={`relative cursor-pointer rounded-lg border-2 bg-white p-4 shadow-sm transition-all hover:shadow-md ${
+                                        className={`relative cursor-pointer rounded-lg border-2 bg-white p-3 shadow-sm transition-all hover:shadow-md sm:p-4 ${
                                             selectedTemplateId === template.id
                                                 ? 'border-blue-500 bg-blue-50'
                                                 : 'border-gray-200 hover:border-gray-300'
@@ -220,32 +216,32 @@ export default function NotificationTemplateCard({
                                         {/* Selection Indicator */}
                                         {selectedTemplateId === template.id && (
                                             <>
-                                                <div className="absolute -top-2 -left-2 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white shadow-sm">
-                                                    <Check className="h-3 w-3" />
+                                                <div className="absolute -top-2 -left-2 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-white shadow-sm sm:h-6 sm:w-6">
+                                                    <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                                 </div>
                                                 <button
                                                     onClick={(e) => {
                                                         e.stopPropagation();
                                                         handleDeleteTemplate(template.id);
                                                     }}
-                                                    className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow-sm transition-colors hover:bg-red-600"
+                                                    className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white shadow-sm transition-colors hover:bg-red-600 sm:h-6 sm:w-6"
                                                 >
-                                                    <Trash2 className="h-3 w-3" />
+                                                    <Trash2 className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                                 </button>
                                             </>
                                         )}
 
                                         {/* Template Header */}
-                                        <div className="mb-3 flex items-start justify-between">
-                                            <div className="flex items-center space-x-2">
-                                                <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-500">
-                                                    <Bell className="h-3 w-3 text-white" />
+                                        <div className="mb-2 flex items-start justify-between sm:mb-3">
+                                            <div className="flex items-center space-x-1.5 sm:space-x-2">
+                                                <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 sm:h-6 sm:w-6">
+                                                    <Bell className="h-2.5 w-2.5 text-white sm:h-3 sm:w-3" />
                                                 </div>
                                                 <span
-                                                    className={`rounded-full px-2 py-1 text-xs font-medium ${
+                                                    className={`rounded-full px-1.5 py-0.5 text-xs font-medium sm:px-2 sm:py-1 ${
                                                         template.priority === 'high'
                                                             ? 'bg-red-100 text-red-800'
-                                                            : template.priority === 'medium'
+                                                            : template.priority === 'normal'
                                                               ? 'bg-yellow-100 text-yellow-800'
                                                               : 'bg-green-100 text-green-800'
                                                     }`}
@@ -256,25 +252,29 @@ export default function NotificationTemplateCard({
                                         </div>
 
                                         {/* Template Content */}
-                                        <div className="space-y-2">
-                                            <h4 className="line-clamp-2 font-medium text-gray-900">{template.title}</h4>
-                                            <p className="line-clamp-3 text-sm text-gray-600">{template.body}</p>
+                                        <div className="space-y-1.5 sm:space-y-2">
+                                            <h4 className="line-clamp-2 text-sm font-medium text-gray-900 sm:text-base">
+                                                {template.title}
+                                            </h4>
+                                            <p className="line-clamp-3 text-xs text-gray-600 sm:text-sm">
+                                                {template.body}
+                                            </p>
                                         </div>
 
                                         {/* Template Image */}
                                         {template.image && (
-                                            <div className="mt-3">
+                                            <div className="mt-2 sm:mt-3">
                                                 <img
                                                     src={template.image}
                                                     alt="Template preview"
-                                                    className="h-20 w-full rounded object-cover"
+                                                    className="h-16 w-full rounded object-cover sm:h-20"
                                                 />
                                             </div>
                                         )}
 
                                         {/* Action URL */}
                                         {template.actionUrl && (
-                                            <div className="mt-3">
+                                            <div className="mt-2 sm:mt-3">
                                                 <p className="truncate text-xs text-blue-600">
                                                     🔗 {template.actionUrl}
                                                 </p>
@@ -282,168 +282,42 @@ export default function NotificationTemplateCard({
                                         )}
 
                                         {/* Template Footer */}
-                                        <div className="mt-3 flex items-center justify-between text-xs text-gray-500">
-                                            <span>Template #{template.id.slice(-6)}</span>
+                                        <div className="mt-2 flex items-center justify-between text-xs text-gray-500 sm:mt-3">
+                                            <span>#{template.id.slice(-6)}</span>
                                             {template.createdAt && (
-                                                <span>{new Date(template.createdAt).toLocaleDateString('id-ID')}</span>
+                                                <span className="hidden sm:inline">
+                                                    {new Date(template.createdAt).toLocaleDateString('id-ID')}
+                                                </span>
                                             )}
                                         </div>
                                     </div>
                                 ))}
 
-                                {/* Add New Template Card */}
-                                <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
-                                    <DialogTrigger asChild>
-                                        <div className="flex min-h-[200px] cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-6 text-gray-500 transition-all hover:border-blue-400 hover:text-blue-600 hover:shadow-md">
-                                            <div className="flex flex-col items-center">
-                                                <Button
-                                                    size="icon"
-                                                    className="mb-3 rounded-full border border-gray-300"
-                                                    variant="outline"
-                                                >
-                                                    <Plus />
-                                                </Button>
-                                                <p className="text-sm font-medium">Buat Template Baru</p>
-                                            </div>
-                                        </div>
-                                    </DialogTrigger>
-
-                                    <DialogContent className="max-h-[90vh] w-full overflow-y-auto rounded-2xl p-0 sm:max-w-5xl">
-                                        <DialogHeader className="px-6 pt-6">
-                                            <DialogTitle className="text-xl font-semibold">
-                                                Buat Template Baru
-                                            </DialogTitle>
-                                            <DialogDescription>
-                                                Buat template notifikasi baru dan pilih user yang akan ditambahkan.
-                                            </DialogDescription>
-                                        </DialogHeader>
-
-                                        {/* Body */}
-                                        <div className="p-6">
-                                            <div className="mb-6 flex items-center justify-between">
-                                                <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
-                                                    <Bell className="h-5 w-5 text-blue-500" />
-                                                    <span>Create Notification</span>
-                                                </h2>
-                                            </div>
-
-                                            <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-                                                {/* Form Fields */}
-                                                <form onSubmit={handleSaveTemplates} className="space-y-6">
-                                                    <div>
-                                                        <label className="mb-2 block text-sm font-medium text-gray-700">
-                                                            Judul Notifikasi *
-                                                        </label>
-                                                        <Input
-                                                            type="text"
-                                                            placeholder="Masukkan judul notifikasi..."
-                                                            value={notification.title}
-                                                            onChange={handleInputChange('title')}
-                                                            maxLength={100}
-                                                            required
-                                                        />
-                                                        <p className="mt-1 text-xs text-gray-500">
-                                                            {notification.title.length}/100 karakter
-                                                        </p>
-                                                    </div>
-
-                                                    <div>
-                                                        <label className="mb-2 block text-sm font-medium text-gray-700">
-                                                            Pesan *
-                                                        </label>
-                                                        <textarea
-                                                            className="w-full resize-none rounded-lg border border-gray-300 px-4 py-3 text-sm shadow-sm focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                                                            rows={4}
-                                                            placeholder="Masukkan pesan notifikasi..."
-                                                            value={notification.body}
-                                                            onChange={handleInputChange('body')}
-                                                            maxLength={200}
-                                                            required
-                                                        />
-                                                        <p className="mt-1 text-xs text-gray-500">
-                                                            {notification.body.length}/200 karakter
-                                                        </p>
-                                                    </div>
-
-                                                    <div>
-                                                        <label className="mb-2 block text-sm font-medium text-gray-700">
-                                                            URL Aksi (Opsional)
-                                                        </label>
-                                                        <Input
-                                                            type="url"
-                                                            placeholder="https://example.com"
-                                                            value={notification.actionUrl}
-                                                            onChange={handleInputChange('actionUrl')}
-                                                        />
-                                                        <p className="mt-1 text-xs text-gray-500">
-                                                            URL yang akan dibuka ketika notifikasi diklik
-                                                        </p>
-                                                    </div>
-
-                                                    <div>
-                                                        <label className="mb-2 block text-sm font-medium text-gray-700">
-                                                            Prioritas
-                                                        </label>
-                                                        <select
-                                                            className="w-full rounded-lg border border-gray-300 px-4 py-3 text-sm shadow-sm focus:border-transparent focus:ring-2 focus:ring-blue-500"
-                                                            value={notification.priority}
-                                                            onChange={handleInputChange('priority')}
-                                                        >
-                                                            {PRIORITY_OPTIONS.map((option) => (
-                                                                <option key={option.value} value={option.value}>
-                                                                    {option.label}
-                                                                </option>
-                                                            ))}
-                                                        </select>
-                                                    </div>
-
-                                                    <div className="pt-4">
-                                                        {isFormValid() && (
-                                                            <Button
-                                                                className="w-full lg:w-auto"
-                                                                size="sm"
-                                                                type="submit"
-                                                                disabled={isLoading}
-                                                            >
-                                                                {isLoading ? (
-                                                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                                                                ) : (
-                                                                    <Plus className="mr-2 h-4 w-4" />
-                                                                )}
-                                                                Save as Template
-                                                            </Button>
-                                                        )}
-                                                    </div>
-                                                </form>
-
-                                                {/* Image Upload & Preview */}
-                                                <div className="space-y-6">
-                                                    <div>
-                                                        <label className="mb-2 block text-sm font-medium text-gray-700">
-                                                            Gambar Notifikasi (Opsional)
-                                                        </label>
-                                                        <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-all hover:border-blue-400 hover:bg-blue-50">
-                                                            <UploadImageGallery
-                                                                onSelect={(url: string) => setSelectedImage(url)}
-                                                                userId={user?.id}
-                                                            />
-                                                        </div>
-                                                    </div>
-                                                    <div>{renderNotificationPreview()}</div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </DialogContent>
-                                </Dialog>
+                                {/* Add New Template Card - Mobile Optimized */}
+                                <div
+                                    onClick={() => setIsCreateDialogOpen(true)}
+                                    className="flex min-h-[120px] cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-4 text-gray-500 transition-all hover:border-blue-400 hover:text-blue-600 hover:shadow-md sm:min-h-[200px] sm:p-6"
+                                >
+                                    <div className="flex flex-col items-center text-center">
+                                        <Button
+                                            size="sm"
+                                            className="mb-2 h-8 w-8 rounded-full border border-gray-300 sm:mb-3 sm:h-10 sm:w-10"
+                                            variant="outline"
+                                        >
+                                            <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
+                                        </Button>
+                                        <p className="text-xs font-medium sm:text-sm">Buat Template Baru</p>
+                                    </div>
+                                </div>
                             </div>
                         ) : (
-                            /* No Search Results */
-                            <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
-                                <Search className="mx-auto h-12 w-12 text-gray-400" />
-                                <h3 className="mt-4 text-sm font-medium text-gray-900">
+                            /* No Search Results - Mobile Optimized */
+                            <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center sm:p-12">
+                                <Search className="mx-auto h-8 w-8 text-gray-400 sm:h-12 sm:w-12" />
+                                <h3 className="mt-3 text-sm font-medium text-gray-900 sm:mt-4">
                                     Tidak ada template yang cocok
                                 </h3>
-                                <p className="mt-2 text-sm text-gray-500">
+                                <p className="mt-1 text-xs text-gray-500 sm:mt-2 sm:text-sm">
                                     Coba ubah kata kunci pencarian atau{' '}
                                     <button
                                         onClick={clearSearch}
@@ -456,21 +330,173 @@ export default function NotificationTemplateCard({
                         )}
                     </>
                 ) : (
-                    /* No Templates */
-                    <div className="rounded-lg border-2 border-dashed border-gray-300 p-12 text-center">
-                        <Bell className="mx-auto h-12 w-12 text-gray-400" />
-                        <h3 className="mt-4 text-sm font-medium text-gray-900">Belum ada template</h3>
-                        <p className="mt-2 text-sm text-gray-500">Belum ada template notifikasi yang tersedia.</p>
-                        <div className="mt-6">
-                            <Link href="/notification/custom">
-                                <Button className="gap-2">
-                                    <Plus className="h-4 w-4" />
-                                    Buat Template Pertama
-                                </Button>
-                            </Link>
+                    /* No Templates - Mobile Optimized */
+                    <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center sm:p-12">
+                        <Bell className="mx-auto h-8 w-8 text-gray-400 sm:h-12 sm:w-12" />
+                        <h3 className="mt-3 text-sm font-medium text-gray-900 sm:mt-4">Belum ada template</h3>
+                        <p className="mt-1 text-xs text-gray-500 sm:mt-2 sm:text-sm">
+                            Belum ada template notifikasi yang tersedia.
+                        </p>
+                        <div className="mt-4 sm:mt-6">
+                            <Button onClick={() => setIsCreateDialogOpen(true)} className="gap-2 text-sm" size="sm">
+                                <Plus className="h-3 w-3 sm:h-4 sm:w-4" />
+                                Buat Template Pertama
+                            </Button>
                         </div>
                     </div>
                 )}
+
+                {/* Create Template Dialog - Mobile Responsive */}
+                <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
+                    <DialogContent className="h-[95vh] w-[95vw] overflow-y-auto rounded-lg p-0 sm:h-[90vh] sm:w-full sm:max-w-5xl sm:rounded-2xl">
+                        <DialogHeader className="p-4 sm:px-6 sm:pt-6">
+                            <DialogTitle className="text-lg font-semibold sm:text-xl">Buat Template Baru</DialogTitle>
+                            <DialogDescription className="text-sm sm:text-base">
+                                Buat template notifikasi baru untuk digunakan nanti.
+                            </DialogDescription>
+                        </DialogHeader>
+
+                        {/* Body - Mobile Layout */}
+                        <div className="p-4">
+                            <div className="mb-4 flex items-center justify-between sm:mb-6">
+                                <h2 className="flex items-center gap-2 text-base font-semibold text-gray-900 sm:text-lg">
+                                    <Bell className="h-4 w-4 text-blue-500 sm:h-5 sm:w-5" />
+                                    <span>Create Notification</span>
+                                </h2>
+                            </div>
+
+                            {/* Mobile: Stack vertically, Desktop: Side by side */}
+                            <div className="space-y-6 lg:grid lg:grid-cols-2 lg:gap-8 lg:space-y-0">
+                                {/* Form Fields */}
+                                <form onSubmit={handleSaveTemplates} className="space-y-4 sm:space-y-6">
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                                            Judul Notifikasi *
+                                        </label>
+                                        <Input
+                                            type="text"
+                                            placeholder="Masukkan judul notifikasi..."
+                                            value={notification.title}
+                                            onChange={handleInputChange('title')}
+                                            maxLength={100}
+                                            required
+                                            className="text-sm sm:text-base"
+                                        />
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            {notification.title.length}/100 karakter
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">Pesan *</label>
+                                        <textarea
+                                            className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-transparent focus:ring-2 focus:ring-blue-500 sm:px-4 sm:py-3"
+                                            rows={3}
+                                            placeholder="Masukkan pesan notifikasi..."
+                                            value={notification.body}
+                                            onChange={handleInputChange('body')}
+                                            maxLength={200}
+                                            required
+                                        />
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            {notification.body.length}/200 karakter
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                                            URL Aksi (Opsional)
+                                        </label>
+                                        <Input
+                                            type="url"
+                                            placeholder="https://example.com"
+                                            value={notification.actionUrl}
+                                            onChange={handleInputChange('actionUrl')}
+                                            className="text-sm sm:text-base"
+                                        />
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            URL yang akan dibuka ketika notifikasi diklik
+                                        </p>
+                                    </div>
+
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                                            Prioritas
+                                        </label>
+                                        <select
+                                            className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-transparent focus:ring-2 focus:ring-blue-500 sm:px-4 sm:py-3"
+                                            value={notification.priority}
+                                            onChange={handleInputChange('priority')}
+                                        >
+                                            {PRIORITY_OPTIONS.map((option) => (
+                                                <option key={option.value} value={option.value}>
+                                                    {option.label}
+                                                </option>
+                                            ))}
+                                        </select>
+                                    </div>
+
+                                    {/* Image Upload Section - Mobile */}
+                                    <div className="block lg:hidden">
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                                            Gambar Notifikasi (Opsional)
+                                        </label>
+                                        <div className="rounded-lg border-2 border-dashed border-gray-300 p-3 text-center transition-all hover:border-blue-400 hover:bg-blue-50 sm:p-6">
+                                            <UploadImageGallery
+                                                onSelect={(url: string) => setSelectedImage(url)}
+                                                userId={user?.id}
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {/* Mobile Preview */}
+                                    <div className="block lg:hidden">{renderNotificationPreview()}</div>
+
+                                    <div className="flex flex-col justify-end gap-2 pt-2 sm:flex-row sm:pt-4">
+                                        <Button
+                                            className="w-full sm:w-auto"
+                                            size="sm"
+                                            type="submit"
+                                            disabled={isLoading || !isFormValid()}
+                                        >
+                                            {isLoading ? (
+                                                <Loader2 className="mr-2 h-3 w-3 animate-spin sm:h-4 sm:w-4" />
+                                            ) : (
+                                                <Plus className="mr-2 h-3 w-3 sm:h-4 sm:w-4" />
+                                            )}
+                                            Simpan Template
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            variant="outline"
+                                            size="sm"
+                                            className="w-full sm:w-auto"
+                                            onClick={() => setIsCreateDialogOpen(false)}
+                                        >
+                                            Batal
+                                        </Button>
+                                    </div>
+                                </form>
+
+                                {/* Desktop Image Upload & Preview */}
+                                <div className="hidden space-y-6 lg:block">
+                                    <div>
+                                        <label className="mb-2 block text-sm font-medium text-gray-700">
+                                            Gambar Notifikasi (Opsional)
+                                        </label>
+                                        <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-all hover:border-blue-400 hover:bg-blue-50">
+                                            <UploadImageGallery
+                                                onSelect={(url: string) => setSelectedImage(url)}
+                                                userId={user?.id}
+                                            />
+                                        </div>
+                                    </div>
+                                    <div>{renderNotificationPreview()}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </DialogContent>
+                </Dialog>
             </div>
         </>
     );

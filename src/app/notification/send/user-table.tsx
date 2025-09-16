@@ -1,6 +1,7 @@
 'use client';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { Button } from '@/components/ui/button';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { createInitial } from '@/lib/utils';
 
@@ -31,17 +32,12 @@ export default function UserTable({
                 <div className="flex items-center justify-between">
                     <h2 className="flex items-center space-x-2 text-xl font-semibold text-gray-900">
                         <Users className="h-5 w-5" />
-                        <span>Daftar Pengguna ({allProfiles?.length})</span>
+                        <span>Daftar User ({allProfiles?.length})</span>
                     </h2>
                     <div className="flex items-center space-x-3">
-                        <span className="text-sm text-gray-600">
-                            {selectedUsers.length} dari {allProfiles?.length} dipilih
-                        </span>
-                        <button
-                            type="button"
+                        <Button
                             onClick={handleSendToSelected}
                             disabled={selectedUsers.length === 0 || !isFormValid || isLoading}
-                            className="inline-flex items-center rounded-lg bg-green-600 px-4 py-2 text-white transition-colors hover:bg-green-700 focus:ring-2 focus:ring-green-500 focus:ring-offset-2 focus:outline-none disabled:cursor-not-allowed disabled:bg-gray-400"
                         >
                             {isLoading ? (
                                 <>
@@ -51,10 +47,10 @@ export default function UserTable({
                             ) : (
                                 <>
                                     <Send className="mr-2 h-4 w-4" />
-                                    Kirim ke Terpilih
+                                    Kirim {selectedUsers.length > 0 ? `ke (${selectedUsers.length}) user` : ''}
                                 </>
                             )}
-                        </button>
+                        </Button>
                     </div>
                 </div>
             </div>

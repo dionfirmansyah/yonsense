@@ -208,10 +208,12 @@ export default function UploadImageGallery({
                                 <img
                                     src={imageUrl}
                                     alt={file.image?.path || 'Push notification image'}
-                                    className={`h-28 w-full object-cover transition-all duration-200 ${
+                                    className={`object-cover transition-all duration-200 ${
                                         isSelected ? 'opacity-90' : 'group-hover:opacity-80'
                                     }`}
                                     loading="lazy"
+                                    width={400}
+                                    height={300}
                                     onError={(e) => {
                                         const target = e.target as HTMLImageElement;
                                         target.src =

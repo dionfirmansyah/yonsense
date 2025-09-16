@@ -5,12 +5,12 @@ import AppContent from '@/components/yosense/sidebar/app-content';
 import { AppSidebar } from '@/components/yosense/sidebar/app-sidebar';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { db, Segment } from '@/lib/db';
-import { Loader2, RefreshCw, Send, Target, Users } from 'lucide-react';
-import { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { Loader2, RefreshCw, Send, User, Users2 } from 'lucide-react';
+import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import UserTable from '../user-table';
 import NotificationTemplateCard from './notification-template-card';
 import UserSegmentManager from './user-segment-manager';
+import UserTable from './user-table';
 
 interface PageProps {}
 
@@ -24,12 +24,6 @@ interface NotificationData {
 
 type NotificationPriority = 'low' | 'normal' | 'high';
 type TargetMode = 'individual' | 'segment';
-
-const PRIORITY_OPTIONS: { value: NotificationPriority; label: string }[] = [
-    { value: 'low', label: 'Rendah' },
-    { value: 'normal', label: 'Normal' },
-    { value: 'high', label: 'Tinggi' },
-];
 
 const INITIAL_NOTIFICATION_STATE: NotificationData = {
     title: '',
@@ -107,13 +101,6 @@ export default function TemplatePage({}: PageProps) {
     }, [isFormValid, finalTargetUsers.length, isLoading]);
 
     // Event handlers
-    const handleInputChange = useCallback((field: keyof NotificationData) => {
-        return (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-            const value = event.target.value;
-            setNotification((prev) => ({ ...prev, [field]: value }));
-            setError(null);
-        };
-    }, []);
 
     const handleSendNotification = useCallback(
         async (userIds: string[]) => {
@@ -267,28 +254,30 @@ export default function TemplatePage({}: PageProps) {
                     <div className="mb-4">
                         <h3 className="mb-3 font-medium text-gray-900">Pilih Mode Target</h3>
                         <div className="flex gap-3">
-                            <button
+                            <Button
+                                variant="outline"
                                 onClick={() => handleTargetModeChange('individual')}
-                                className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${
+                                className={
                                     targetMode === 'individual'
                                         ? 'border-blue-500 bg-blue-50 text-blue-700'
                                         : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                                }`}
+                                }
                             >
-                                <Users className="h-4 w-4" />
-                                Individual Users
-                            </button>
-                            <button
+                                <User className="h-4 w-4" />
+                                Kirim Individu
+                            </Button>
+                            <Button
+                                variant="outline"
                                 onClick={() => handleTargetModeChange('segment')}
-                                className={`flex items-center gap-2 rounded-lg border px-4 py-2 transition-all ${
+                                className={
                                     targetMode === 'segment'
                                         ? 'border-blue-500 bg-blue-50 text-blue-700'
                                         : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                                }`}
+                                }
                             >
-                                <Target className="h-4 w-4" />
-                                User Segments
-                            </button>
+                                <Users2 className="h-4 w-4" />
+                                Kirim Grup
+                            </Button>
                         </div>
                     </div>
 
@@ -318,44 +307,24 @@ export default function TemplatePage({}: PageProps) {
 
                     {/* Action Bar */}
 
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-4">
-                            <div className="text-sm text-gray-600">
-                                <span className="font-medium">Target: </span>
-                                {targetMode === 'segment' ? (
-                                    <>
-                                        {selectedSegments.length} segment ({finalTargetUsers.length} users)
-                                    </>
-                                ) : (
-                                    <>{selectedUsers.length} individual users</>
-                                )}
-                            </div>
-                            {selectedTemplateId && <div className="text-sm text-green-600">✓ Template dipilih</div>}
-                        </div>
-
-                        <div className="flex items-center gap-3">
-                            <Button
-                                variant="outline"
-                                onClick={handleResetForm}
-                                disabled={isLoading}
-                                className="flex items-center gap-2"
-                            >
-                                <RefreshCw className="h-4 w-4" />
-                                Reset
-                            </Button>
-                            <Button
-                                onClick={handleSendToSelected}
-                                disabled={!canSendNotification}
-                                className="flex items-center gap-2"
-                            >
-                                {isLoading ? (
-                                    <Loader2 className="h-4 w-4 animate-spin" />
-                                ) : (
-                                    <Send className="h-4 w-4" />
-                                )}
-                                Kirim Notifikasi
-                            </Button>
-                        </div>
+                    <div className="flex items-center justify-end gap-2">
+                        <Button
+                            variant="outline"
+                            onClick={handleResetForm}
+                            disabled={isLoading}
+                            className="flex items-center gap-2"
+                        >
+                            <RefreshCw className="h-4 w-4" />
+                            Reset
+                        </Button>
+                        <Button
+                            onClick={handleSendToSelected}
+                            disabled={!canSendNotification}
+                            className="flex items-center gap-2"
+                        >
+                            {isLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />}
+                            Kirim Notifikasi
+                        </Button>
                     </div>
                 </div>
             </AppContent>
