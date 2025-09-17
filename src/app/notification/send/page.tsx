@@ -235,13 +235,11 @@ export default function TemplatePage({}: PageProps) {
         <SidebarProvider>
             <AppSidebar />
             <AppContent>
-                <div className="space-y-6 p-6">
+                <div className="space-y-6">
                     {/* Page Header */}
                     <div className="border-b pb-4">
                         <h1 className="text-2xl font-bold">Kirim Notifikasi</h1>
-                        <p className="mt-1 text-base">
-                            Pilih template dan target pengguna untuk mengirim notifikasi push
-                        </p>
+                        <p className="mt-1 text-base">Pilih template dan target pengguna untuk mengirim notifikasi</p>
                     </div>
 
                     {/* Error Display */}

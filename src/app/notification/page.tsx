@@ -115,6 +115,11 @@ export default function Page({}: PageProps) {
         [db],
     );
 
+    const handleSelectedCategory = useCallback((category: string) => {
+        setSelectedCategory(category);
+        router.push(`?filter=${category}`);
+    }, []);
+
     const handleNavigate = useCallback(() => {
         router.push('/dashboard');
     }, [router]);
@@ -167,13 +172,13 @@ export default function Page({}: PageProps) {
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className={`border-primary w-fit rounded-full border-2 text-xs ${
+                                                    className={`border-primary w-fit cursor-pointer rounded-full border-2 text-xs ${
                                                         searchParams.get('filter') === 'all' ||
                                                         !searchParams.get('filter')
                                                             ? 'bg-primary text-primary-foreground dark:bg-primary/60 dark:text-primary-foreground'
                                                             : 'text-primary'
                                                     }`}
-                                                    onClick={() => setSelectedCategory('all')}
+                                                    onClick={() => handleSelectedCategory('all')}
                                                 >
                                                     All
                                                 </Button>
@@ -182,12 +187,12 @@ export default function Page({}: PageProps) {
                                                         key={cat.id}
                                                         variant="outline"
                                                         size="sm"
-                                                        className={`border-primary w-fit rounded-full border-2 text-xs ${
+                                                        className={`border-primary w-fit cursor-pointer rounded-full border-2 text-xs ${
                                                             searchParams.get('filter') === cat.name
                                                                 ? 'bg-primary text-primary-foreground dark:bg-primary/60 dark:text-primary-foreground'
                                                                 : 'text-primary'
                                                         }`}
-                                                        onClick={() => setSelectedCategory(cat.name)}
+                                                        onClick={() => handleSelectedCategory(cat.name)}
                                                     >
                                                         {cat.name}
                                                     </Button>
@@ -232,12 +237,12 @@ export default function Page({}: PageProps) {
                                 <Button
                                     variant="outline"
                                     size="sm"
-                                    className={`border-primary w-fit rounded-full border-2 text-xs ${
+                                    className={`border-primary w-fit cursor-pointer rounded-full border-2 text-xs ${
                                         searchParams.get('filter') === 'all' || !searchParams.get('filter')
                                             ? 'bg-primary text-primary-foreground dark:bg-primary/60 dark:text-primary-foreground'
                                             : 'text-primary'
                                     }`}
-                                    onClick={() => setSelectedCategory('all')}
+                                    onClick={() => handleSelectedCategory('all')}
                                 >
                                     All
                                 </Button>
@@ -246,12 +251,12 @@ export default function Page({}: PageProps) {
                                         key={cat.id}
                                         variant="outline"
                                         size="sm"
-                                        className={`border-primary w-fit rounded-full border-2 text-xs ${
+                                        className={`border-primary w-fit cursor-pointer rounded-full border-2 text-xs ${
                                             searchParams.get('filter') === cat.name
                                                 ? 'bg-primary text-primary-foreground dark:bg-primary/60 dark:text-primary-foreground'
                                                 : 'text-primary'
                                         }`}
-                                        onClick={() => setSelectedCategory(cat.name)}
+                                        onClick={() => handleSelectedCategory(cat.name)}
                                     >
                                         {cat.name}
                                     </Button>
@@ -261,8 +266,8 @@ export default function Page({}: PageProps) {
 
                         {/* Notification Table */}
                         {notifications.length > 0 ? (
-                            <Card className="shadow-md">
-                                <CardContent>
+                            <Card className="py-0 shadow-md">
+                                <CardContent className="p-2">
                                     <Table>
                                         <TableBody>
                                             {notifications.map((n) => {
@@ -282,7 +287,7 @@ export default function Page({}: PageProps) {
                                                             <div className="border-primary relative w-fit rounded-md border-2 p-1">
                                                                 <IconComp size={14} />
                                                                 {!n.readAt && (
-                                                                    <span className="bg-destructive absolute top-2 left-7 h-2 w-2 rounded-full" />
+                                                                    <span className="bg-destructive absolute -top-1 left-5 h-2 w-2 rounded-full" />
                                                                 )}
                                                             </div>
                                                         </TableCell>

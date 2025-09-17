@@ -231,9 +231,7 @@ export default function UserSegmentManager({
                     <div
                         key={segment.id}
                         className={`bg-background relative cursor-pointer rounded-lg border-2 p-4 shadow-sm transition-all hover:shadow-md ${
-                            isSelected(segment.id)
-                                ? 'border-primary bg-primary ring-primary ring-2'
-                                : 'border-gray-200 hover:border-gray-300'
+                            isSelected(segment.id) ? 'ring-primary ring-1' : 'border-gray-200 hover:border-gray-300'
                         }`}
                         onClick={() => onSelectSegment(segment)}
                     >
@@ -273,10 +271,8 @@ export default function UserSegmentManager({
 
                         {/* Segment Content */}
                         <div className="space-y-2">
-                            <h4 className="line-clamp-2 font-medium text-gray-900">{segment.name}</h4>
-                            {segment.description && (
-                                <p className="line-clamp-3 text-sm text-gray-600">{segment.description}</p>
-                            )}
+                            <h4 className="line-clamp-2 font-medium">{segment.name}</h4>
+                            {segment.description && <p className="line-clamp-3 text-sm">{segment.description}</p>}
                         </div>
 
                         {/* Segment Footer */}
@@ -368,7 +364,7 @@ export default function UserSegmentManager({
                                     </div>
 
                                     {/* Selected Users Summary */}
-                                    <div className="bg-primary rounded-lg p-4">
+                                    <div className="rounded-lg p-4">
                                         <div className="mb-2 flex items-center gap-2">
                                             <Users className="text-primary h-5 w-5" />
                                             <span className="text-primary font-medium">
@@ -402,7 +398,7 @@ export default function UserSegmentManager({
                                             </div>
 
                                             {/* User List */}
-                                            <div className="flex-1 space-y-2 overflow-y-auto">
+                                            <div className="flex-1 space-y-2 overflow-y-auto p-1">
                                                 <div className="mb-3 flex items-center justify-end">
                                                     <div className="flex gap-2">
                                                         <Button
@@ -431,8 +427,8 @@ export default function UserSegmentManager({
                                                             key={user.id}
                                                             className={`cursor-pointer rounded-lg border p-3 transition-all ${
                                                                 isUserSelected(user.userId)
-                                                                    ? 'border-primary bg-primary ring-primary ring-2'
-                                                                    : 'bg-background border-gray-200 hover:border-gray-300 hover:bg-gray-50'
+                                                                    ? 'border-primary ring-primary ring-2'
+                                                                    : 'border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                                                             }`}
                                                             onClick={() => toggleUserSelection(user.userId)}
                                                         >
@@ -441,12 +437,12 @@ export default function UserSegmentManager({
                                                                     <div
                                                                         className={`flex h-4 w-4 items-center justify-center rounded border-2 ${
                                                                             isUserSelected(user.userId)
-                                                                                ? 'border-primary bg-primary'
+                                                                                ? 'border-primary'
                                                                                 : 'border-gray-300'
                                                                         }`}
                                                                     >
                                                                         {isUserSelected(user.userId) && (
-                                                                            <Check className="text-background h-3 w-3" />
+                                                                            <Check className="text-primary h-3 w-3" />
                                                                         )}
                                                                     </div>
                                                                 </div>
@@ -542,12 +538,12 @@ export default function UserSegmentManager({
 
             {/* Selection Info */}
             {multiSelect && selectedSegmentIds.length > 0 && (
-                <div className="border-primary bg-primary mt-4 rounded-lg border p-3">
-                    <div className="text-primary flex items-center gap-2 text-sm">
+                <div className="mt-4 rounded-lg border p-3 shadow-sm">
+                    <div className="flex items-center gap-2 text-sm">
                         <Check className="h-4 w-4" />
                         <span className="font-medium">{selectedSegmentIds.length} segment dipilih</span>
                     </div>
-                    <div className="text-primary mt-1 text-xs">
+                    <div className="mt-1 text-xs">
                         Total estimasi user:{' '}
                         {selectedSegmentIds
                             .reduce((total, segmentId) => total + (segmentUserCounts[segmentId] || 0), 0)
