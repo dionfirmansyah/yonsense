@@ -5,9 +5,9 @@ import YonLogo from '@/components/yosense/yon-logo';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { db, NotificationTemplate } from '@/lib/db';
 import { id } from '@instantdb/react';
-import { Bell, Check, FileText, Loader2, Plus, Search, Trash2, Wand2, X } from 'lucide-react';
+import { Check, FileText, Loader2, Plus, Search, Trash2, Wand2, X } from 'lucide-react';
 import { useRouter, useSearchParams } from 'next/navigation';
-import { ChangeEvent, useCallback, useMemo, useState } from 'react';
+import { ChangeEvent, useCallback, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import CategorySelect from './category-select';
 import UploadImageGallery from './upload-image-galery';
@@ -16,6 +16,7 @@ interface NotificationTemplateCardProps {
     templates: NotificationTemplate[];
     onSelectTemplate: (template: NotificationTemplate) => void;
     selectedTemplateId?: string;
+    onChange?: (field: keyof NotificationData, value: string) => void;
 }
 interface NotificationData {
     title: string;
@@ -48,6 +49,7 @@ export default function NotificationTemplateCard({
     templates,
     onSelectTemplate,
     selectedTemplateId,
+    onChange,
 }: NotificationTemplateCardProps) {
     const { user } = db.useAuth();
     const router = useRouter();
@@ -73,18 +75,34 @@ export default function NotificationTemplateCard({
         [searchParams, router],
     );
 
+    useEffect(() => {
+        if (currentMode === 'custom') {
+            setNotification(INITIAL_NOTIFICATION_STATE);
+            setSelectedImage(null);
+        }
+    }, [setMode]);
+
     // Validation helpers
     const isFormValid = useCallback((): boolean => {
         return Boolean(notification.title.trim() && notification.body.trim());
     }, [notification.title, notification.body]);
 
     // Event handlers
-    const handleInputChange = useCallback((field: keyof NotificationData) => {
-        return (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
-            const value = event.target.value;
-            setNotification((prev) => ({ ...prev, [field]: value }));
-        };
-    }, []);
+    const handleInputChange = useCallback(
+        (field: keyof NotificationData) => {
+            return (event: ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
+                const value = event.target.value;
+
+                onChange?.(field, value);
+
+                setNotification((prev) => ({
+                    ...prev,
+                    [field]: value,
+                }));
+            };
+        },
+        [onChange], // tambahin dependency kalau onChange datang dari props
+    );
 
     // Filter templates based on search term
     const filteredTemplates = useMemo(() => {
@@ -167,13 +185,8 @@ export default function NotificationTemplateCard({
         () => (
             <div className="rounded-lg border bg-gray-50 p-3 sm:p-4">
                 <h3 className="mb-3 text-sm font-medium text-gray-900 sm:text-base">Preview Notifikasi</h3>
-                <div className="rounded-lg border bg-white p-3 shadow-sm sm:p-4">
+                <div className="bg-background rounded-lg border p-3 shadow-sm sm:p-4">
                     <div className="flex items-start space-x-2 sm:space-x-3">
-                        <div className="flex-shrink-0">
-                            <div className="flex h-6 w-6 items-center justify-center rounded-full bg-blue-600 sm:h-8 sm:w-8">
-                                <Bell className="h-3 w-3 text-white sm:h-4 sm:w-4" />
-                            </div>
-                        </div>
                         <div className="flex w-full items-center justify-between">
                             <div className="flex min-w-0 flex-1 flex-col items-start">
                                 <p className="w-full truncate text-sm font-medium text-gray-900 sm:text-base">
@@ -197,7 +210,7 @@ export default function NotificationTemplateCard({
                             />
                         )}
                         {notification.actionUrl && (
-                            <p className="mt-2 truncate text-xs text-blue-600">🔗 {notification.actionUrl}</p>
+                            <p className="text-primary mt-2 truncate text-xs">🔗 {notification.actionUrl}</p>
                         )}
                     </div>
                 </div>
@@ -216,7 +229,7 @@ export default function NotificationTemplateCard({
                     placeholder="Cari template..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
-                    className="w-full rounded-lg border border-gray-300 py-2.5 pr-10 pl-10 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none sm:py-2"
+                    className="focus:border-primary focus:ring-primary w-full rounded-lg border border-gray-300 py-2.5 pr-10 pl-10 text-sm focus:ring-1 focus:outline-none sm:py-2"
                 />
                 {searchTerm && (
                     <button
@@ -236,9 +249,9 @@ export default function NotificationTemplateCard({
                             {filteredTemplates.map((template) => (
                                 <div
                                     key={template.id}
-                                    className={`relative cursor-pointer rounded-lg border-2 bg-white p-3 shadow-sm transition-all hover:shadow-md sm:p-4 ${
+                                    className={`bg-background relative cursor-pointer rounded-lg border-2 p-3 shadow-sm transition-all hover:shadow-md sm:p-4 ${
                                         selectedTemplateId === template.id
-                                            ? 'border-blue-500 bg-blue-50'
+                                            ? 'border-primary'
                                             : 'border-gray-200 hover:border-gray-300'
                                     }`}
                                     onClick={() => handleSelectTemplate(template)}
@@ -246,17 +259,17 @@ export default function NotificationTemplateCard({
                                     {/* Selection Indicator */}
                                     {selectedTemplateId === template.id && (
                                         <>
-                                            <div className="absolute -top-2 -left-2 flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 text-white shadow-sm sm:h-6 sm:w-6">
-                                                <Check className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                                            <div className="bg-primary absolute -top-2 -left-2 flex h-5 w-5 items-center justify-center rounded-full shadow-sm sm:h-6 sm:w-6">
+                                                <Check className="h-2.5 w-2.5 text-white sm:h-3 sm:w-3" />
                                             </div>
                                             <button
                                                 onClick={(e) => {
                                                     e.stopPropagation();
                                                     handleDeleteTemplate(template.id);
                                                 }}
-                                                className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 text-white shadow-sm transition-colors hover:bg-red-600 sm:h-6 sm:w-6"
+                                                className="absolute -top-2 -right-2 flex h-5 w-5 items-center justify-center rounded-full bg-red-500 shadow-sm transition-colors hover:bg-red-600 sm:h-6 sm:w-6"
                                             >
-                                                <Trash2 className="h-2.5 w-2.5 sm:h-3 sm:w-3" />
+                                                <Trash2 className="h-2.5 w-2.5 text-white sm:h-3 sm:w-3" />
                                             </button>
                                         </>
                                     )}
@@ -264,9 +277,6 @@ export default function NotificationTemplateCard({
                                     {/* Template Header */}
                                     <div className="mb-2 flex items-start justify-between sm:mb-3">
                                         <div className="flex items-center space-x-1.5 sm:space-x-2">
-                                            <div className="flex h-5 w-5 items-center justify-center rounded-full bg-blue-500 sm:h-6 sm:w-6">
-                                                <Bell className="h-2.5 w-2.5 text-white sm:h-3 sm:w-3" />
-                                            </div>
                                             <span
                                                 className={`rounded-full px-1.5 py-0.5 text-xs font-medium sm:px-2 sm:py-1 ${
                                                     template.priority === 'high'
@@ -303,7 +313,7 @@ export default function NotificationTemplateCard({
                                     {/* Action URL */}
                                     {template.actionUrl && (
                                         <div className="mt-2 sm:mt-3">
-                                            <p className="truncate text-xs text-blue-600">🔗 {template.actionUrl}</p>
+                                            <p className="text-primary truncate text-xs">🔗 {template.actionUrl}</p>
                                         </div>
                                     )}
 
@@ -322,7 +332,7 @@ export default function NotificationTemplateCard({
                             {/* Add New Template Card */}
                             <div
                                 onClick={handleCreateNew}
-                                className="flex min-h-[120px] cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-4 text-gray-500 transition-all hover:border-blue-400 hover:text-blue-600 hover:shadow-md sm:min-h-[200px] sm:p-6"
+                                className="hover:text-primary flex min-h-[120px] cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-4 text-gray-500 transition-all hover:border-blue-400 hover:shadow-md sm:min-h-[200px] sm:p-6"
                             >
                                 <div className="flex flex-col items-center text-center">
                                     <Button
@@ -345,7 +355,7 @@ export default function NotificationTemplateCard({
                             </h3>
                             <p className="mt-1 text-xs text-gray-500 sm:mt-2 sm:text-sm">
                                 Coba ubah kata kunci pencarian atau{' '}
-                                <button onClick={clearSearch} className="text-blue-600 underline hover:text-blue-500">
+                                <button onClick={clearSearch} className="text-primary hover:text-primary underline">
                                     reset pencarian
                                 </button>
                             </p>
@@ -355,7 +365,6 @@ export default function NotificationTemplateCard({
             ) : (
                 /* No Templates */
                 <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center sm:p-12">
-                    <Bell className="mx-auto h-8 w-8 text-gray-400 sm:h-12 sm:w-12" />
                     <h3 className="mt-3 text-sm font-medium text-gray-900 sm:mt-4">Belum ada template</h3>
                     <p className="mt-1 text-xs text-gray-500 sm:mt-2 sm:text-sm">
                         Belum ada template notifikasi yang tersedia.
@@ -389,12 +398,10 @@ export default function NotificationTemplateCard({
                     <p className="mt-1 text-xs text-gray-500">{notification.title.length}/100 karakter</p>
                 </div>
 
-                <h1>{notification.category}</h1>
-
                 <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700">Pesan *</label>
                     <textarea
-                        className="w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-transparent focus:ring-2 focus:ring-blue-500 sm:px-4 sm:py-3"
+                        className="focus:ring-primary w-full resize-none rounded-lg border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-transparent focus:ring-2 sm:px-4 sm:py-3"
                         rows={4}
                         placeholder="Masukkan pesan notifikasi..."
                         value={notification.body}
@@ -447,7 +454,7 @@ export default function NotificationTemplateCard({
 
                 <div className="block lg:hidden">
                     <label className="mb-2 block text-sm font-medium text-gray-700">Gambar Notifikasi (Opsional)</label>
-                    <div className="rounded-lg border-2 border-dashed border-gray-300 p-3 text-center transition-all hover:border-blue-400 hover:bg-blue-50 sm:p-6">
+                    <div className="hover: rounded-lg border-2 border-dashed border-gray-300 p-3 text-center transition-all hover:border-blue-400 sm:p-6">
                         <UploadImageGallery onSelect={(url: string) => setSelectedImage(url)} userId={user?.id} />
                     </div>
                 </div>
@@ -486,7 +493,7 @@ export default function NotificationTemplateCard({
 
                 <div>
                     <label className="mb-2 block text-sm font-medium text-gray-700">Gambar Notifikasi (Opsional)</label>
-                    <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-all hover:border-blue-400 hover:bg-blue-50">
+                    <div className="hover: rounded-lg border-2 border-dashed border-gray-300 p-6 text-center transition-all hover:border-blue-400">
                         <UploadImageGallery onSelect={(url: string) => setSelectedImage(url)} userId={user?.id} />
                     </div>
                 </div>
@@ -504,7 +511,7 @@ export default function NotificationTemplateCard({
                         onClick={() => setMode('template')}
                         className={`flex items-center gap-2 border-b-2 px-1 py-2 text-sm font-medium whitespace-nowrap ${
                             currentMode === 'template'
-                                ? 'border-blue-500 text-blue-600'
+                                ? 'border-primary text-primary'
                                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                         }`}
                     >
@@ -515,7 +522,7 @@ export default function NotificationTemplateCard({
                         onClick={() => setMode('custom')}
                         className={`flex items-center gap-2 border-b-2 px-1 py-2 text-sm font-medium whitespace-nowrap ${
                             currentMode === 'custom'
-                                ? 'border-blue-500 text-blue-600'
+                                ? 'border-primary text-primary'
                                 : 'border-transparent text-gray-500 hover:border-gray-300 hover:text-gray-700'
                         }`}
                     >

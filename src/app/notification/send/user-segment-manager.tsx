@@ -230,9 +230,9 @@ export default function UserSegmentManager({
                 {filteredSegments.map((segment) => (
                     <div
                         key={segment.id}
-                        className={`relative cursor-pointer rounded-lg border-2 bg-white p-4 shadow-sm transition-all hover:shadow-md ${
+                        className={`bg-background relative cursor-pointer rounded-lg border-2 p-4 shadow-sm transition-all hover:shadow-md ${
                             isSelected(segment.id)
-                                ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
+                                ? 'border-primary bg-primary ring-primary ring-2'
                                 : 'border-gray-200 hover:border-gray-300'
                         }`}
                         onClick={() => onSelectSegment(segment)}
@@ -240,13 +240,13 @@ export default function UserSegmentManager({
                         {isSelected(segment.id) && (
                             <>
                                 {/* Selection Indicator */}
-                                <div className="absolute -top-2 -left-2 flex h-6 w-6 items-center justify-center rounded-full bg-blue-500 text-white shadow-sm">
+                                <div className="bg-primary text-background absolute -top-2 -left-2 flex h-6 w-6 items-center justify-center rounded-full shadow-sm">
                                     <Check className="h-3 w-3" />
                                 </div>
                                 {/* Delete Button */}
                                 <button
                                     onClick={(e) => handleDeleteSegment(segment.id, e)}
-                                    className="absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 text-white shadow-sm transition-colors hover:bg-red-600"
+                                    className="text-background absolute -top-2 -right-2 flex h-6 w-6 items-center justify-center rounded-full bg-red-500 shadow-sm transition-colors hover:bg-red-600"
                                 >
                                     <Trash2 className="h-3 w-3" />
                                 </button>
@@ -260,7 +260,7 @@ export default function UserSegmentManager({
                                     className="flex h-6 w-6 items-center justify-center rounded-full"
                                     style={{ backgroundColor: segment.color || '#3B82F6' }}
                                 >
-                                    <Users className="h-3 w-3 text-white" />
+                                    <Users className="text-background h-3 w-3" />
                                 </div>
                                 <div className="flex items-center gap-2 text-xs text-gray-500">
                                     <Users className="h-3 w-3" />
@@ -292,7 +292,7 @@ export default function UserSegmentManager({
                 {/* Add New Segment Card */}
                 <Dialog open={isCreateDialogOpen} onOpenChange={setIsCreateDialogOpen}>
                     <DialogTrigger asChild>
-                        <div className="flex min-h-[200px] cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 bg-white p-4 text-gray-500 transition-colors hover:border-gray-400 hover:text-gray-600">
+                        <div className="bg-background flex min-h-[200px] cursor-pointer items-center justify-center gap-2 rounded-lg border-2 border-dashed border-gray-300 p-4 text-gray-500 transition-colors hover:border-gray-400 hover:text-gray-600">
                             <div className="text-center">
                                 <Button size="icon" className="mb-2 rounded-full border" variant="outline">
                                     <Plus />
@@ -321,7 +321,7 @@ export default function UserSegmentManager({
                                             </label>
                                             <input
                                                 type="text"
-                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                                className="focus:ring-primary w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2"
                                                 placeholder="Masukkan nama segment"
                                                 value={newSegment.name}
                                                 onChange={(e) => setNewSegment({ ...newSegment, name: e.target.value })}
@@ -333,7 +333,7 @@ export default function UserSegmentManager({
                                                 Deskripsi
                                             </label>
                                             <textarea
-                                                className="w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2 focus:ring-blue-500"
+                                                className="focus:ring-primary w-full rounded-lg border border-gray-300 px-3 py-2 focus:border-transparent focus:ring-2"
                                                 rows={3}
                                                 placeholder="Deskripsi segment (opsional)"
                                                 value={newSegment.description}
@@ -368,10 +368,10 @@ export default function UserSegmentManager({
                                     </div>
 
                                     {/* Selected Users Summary */}
-                                    <div className="rounded-lg bg-blue-50 p-4">
+                                    <div className="bg-primary rounded-lg p-4">
                                         <div className="mb-2 flex items-center gap-2">
-                                            <Users className="h-5 w-5 text-blue-600" />
-                                            <span className="font-medium text-blue-900">
+                                            <Users className="text-primary h-5 w-5" />
+                                            <span className="text-primary font-medium">
                                                 {selectedUserIds.length} user dipilih
                                             </span>
                                         </div>
@@ -388,7 +388,7 @@ export default function UserSegmentManager({
                                                         placeholder="Cari user berdasarkan nama atau email..."
                                                         value={userSearchTerm}
                                                         onChange={(e) => setUserSearchTerm(e.target.value)}
-                                                        className="w-full rounded-lg border border-gray-300 py-2 pr-10 pl-10 text-sm focus:border-blue-500 focus:ring-1 focus:ring-blue-500 focus:outline-none"
+                                                        className="focus:border-primary focus:ring-primary w-full rounded-lg border border-gray-300 py-2 pr-10 pl-10 text-sm focus:ring-1 focus:outline-none"
                                                     />
                                                     {userSearchTerm && (
                                                         <button
@@ -431,8 +431,8 @@ export default function UserSegmentManager({
                                                             key={user.id}
                                                             className={`cursor-pointer rounded-lg border p-3 transition-all ${
                                                                 isUserSelected(user.userId)
-                                                                    ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200'
-                                                                    : 'border-gray-200 bg-white hover:border-gray-300 hover:bg-gray-50'
+                                                                    ? 'border-primary bg-primary ring-primary ring-2'
+                                                                    : 'bg-background border-gray-200 hover:border-gray-300 hover:bg-gray-50'
                                                             }`}
                                                             onClick={() => toggleUserSelection(user.userId)}
                                                         >
@@ -441,12 +441,12 @@ export default function UserSegmentManager({
                                                                     <div
                                                                         className={`flex h-4 w-4 items-center justify-center rounded border-2 ${
                                                                             isUserSelected(user.userId)
-                                                                                ? 'border-blue-500 bg-blue-500'
+                                                                                ? 'border-primary bg-primary'
                                                                                 : 'border-gray-300'
                                                                         }`}
                                                                     >
                                                                         {isUserSelected(user.userId) && (
-                                                                            <Check className="h-3 w-3 text-white" />
+                                                                            <Check className="text-background h-3 w-3" />
                                                                         )}
                                                                     </div>
                                                                 </div>
@@ -542,12 +542,12 @@ export default function UserSegmentManager({
 
             {/* Selection Info */}
             {multiSelect && selectedSegmentIds.length > 0 && (
-                <div className="mt-4 rounded-lg border border-blue-200 bg-blue-50 p-3">
-                    <div className="flex items-center gap-2 text-sm text-blue-800">
+                <div className="border-primary bg-primary mt-4 rounded-lg border p-3">
+                    <div className="text-primary flex items-center gap-2 text-sm">
                         <Check className="h-4 w-4" />
                         <span className="font-medium">{selectedSegmentIds.length} segment dipilih</span>
                     </div>
-                    <div className="mt-1 text-xs text-blue-600">
+                    <div className="text-primary mt-1 text-xs">
                         Total estimasi user:{' '}
                         {selectedSegmentIds
                             .reduce((total, segmentId) => total + (segmentUserCounts[segmentId] || 0), 0)

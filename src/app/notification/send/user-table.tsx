@@ -53,11 +53,8 @@ export default function UserTable({
             {/* Header */}
             <div className="flex flex-col gap-4 border-b border-gray-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
                 <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
-                    <Users className="h-5 w-5 text-blue-600" />
+                    <Users className="h-5 w-5" />
                     Daftar User
-                    <span className="rounded-full bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-600">
-                        {allProfiles?.length ?? 0}
-                    </span>
                 </h2>
 
                 {/* Search */}

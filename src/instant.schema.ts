@@ -58,6 +58,7 @@ const _schema = i.schema({
         }),
         notification_categories: i.entity({
             name: i.string(),
+            icon: i.string().optional(),
         }),
         segment: i.entity({
             name: i.string().indexed(),

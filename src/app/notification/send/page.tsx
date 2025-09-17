@@ -6,6 +6,7 @@ import { AppSidebar } from '@/components/yosense/sidebar/app-sidebar';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { db, Segment } from '@/lib/db';
 import { Loader2, RefreshCw, Send, User, Users2 } from 'lucide-react';
+import { useSearchParams } from 'next/navigation';
 import { useCallback, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import NotificationTemplateCard from './notification-template-card';
@@ -37,7 +38,9 @@ const INITIAL_NOTIFICATION_STATE: NotificationData = {
 
 export default function TemplatePage({}: PageProps) {
     const { allProfiles, user } = useAuthUser();
-
+    const searchParams = useSearchParams();
+    const mode = searchParams.get('mode');
+    const params = new URLSearchParams(searchParams.toString());
     // State management
     const [notification, setNotification] = useState<NotificationData>(INITIAL_NOTIFICATION_STATE);
     const [selectedUsers, setSelectedUsers] = useState<string[]>([]);
@@ -68,9 +71,6 @@ export default function TemplatePage({}: PageProps) {
             })) || []
         );
     }, [templateData]);
-
-    console.log('templates', templates);
-
     const segments = useMemo(() => {
         return segmentData?.segment || [];
     }, [segmentData]);
@@ -98,11 +98,14 @@ export default function TemplatePage({}: PageProps) {
     // Validation helpers
     const isFormValid = useCallback((): boolean => {
         return Boolean(notification.title.trim() && notification.body.trim());
-    }, [notification.title, notification.body]);
+    }, [notification.title, mode, notification.body]);
 
     const canSendNotification = useMemo(() => {
-        return isFormValid() && finalTargetUsers.length > 0 && !isLoading;
-    }, [isFormValid, finalTargetUsers.length, isLoading]);
+        if (mode === 'custom') {
+            return isFormValid() && finalTargetUsers.length > 0;
+        }
+        return isFormValid() && !isLoading;
+    }, [isFormValid, finalTargetUsers, isLoading, mode]);
 
     // Event handlers
 
@@ -254,6 +257,9 @@ export default function TemplatePage({}: PageProps) {
                         templates={templates}
                         onSelectTemplate={handleSelectTemplate}
                         selectedTemplateId={selectedTemplateId || undefined}
+                        onChange={(field, value) => {
+                            setNotification((prev) => ({ ...prev, [field]: value }));
+                        }}
                     />
 
                     {/* Target Mode Selection */}
@@ -261,30 +267,28 @@ export default function TemplatePage({}: PageProps) {
                     <div className="mb-4">
                         <h3 className="mb-3 font-medium text-gray-900">Pilih Target</h3>
                         <div className="flex gap-3">
-                            <Button
-                                variant="outline"
+                            <button
                                 onClick={() => handleTargetModeChange('individual')}
-                                className={
+                                className={`flex items-center gap-2 px-1 py-2 text-sm font-medium whitespace-nowrap ${
                                     targetMode === 'individual'
-                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                                }
+                                        ? 'text-primary border-primary border-b-2'
+                                        : 'text-gray-700'
+                                }`}
                             >
                                 <User className="h-4 w-4" />
                                 Kirim Individu
-                            </Button>
-                            <Button
-                                variant="outline"
+                            </button>
+                            <button
                                 onClick={() => handleTargetModeChange('segment')}
-                                className={
+                                className={`flex items-center gap-2 px-1 py-2 text-sm font-medium whitespace-nowrap ${
                                     targetMode === 'segment'
-                                        ? 'border-blue-500 bg-blue-50 text-blue-700'
-                                        : 'border-gray-300 bg-white text-gray-700 hover:border-gray-400'
-                                }
+                                        ? 'text-primary border-primary border-b-2'
+                                        : 'text-gray-700'
+                                }`}
                             >
                                 <Users2 className="h-4 w-4" />
                                 Kirim Grup
-                            </Button>
+                            </button>
                         </div>
                     </div>
 
