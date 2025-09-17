@@ -78,8 +78,8 @@ export default function Page({}: PageProps) {
                             size={'sm'}
                             className={`border-primary w-fit cursor-pointer rounded-full border border-2 text-xs ${
                                 searchParams.get('filter') === 'all' || !searchParams.get('filter')
-                                    ? 'bg-primary text-primary-foreground'
-                                    : ''
+                                    ? 'bg-primary text-primary-foreground dark:bg-primary/60 dark:text-primary-foreground'
+                                    : 'text-primary'
                             }`}
                             onClick={() => setFilter('all')}
                         >
@@ -91,7 +91,9 @@ export default function Page({}: PageProps) {
                                 variant="outline"
                                 size={'sm'}
                                 className={`border-primary w-fit cursor-pointer rounded-full border border-2 text-xs ${
-                                    searchParams.get('filter') === cat.name ? 'bg-primary text-primary-foreground' : ''
+                                    searchParams.get('filter') === cat.name
+                                        ? 'bg-primary text-primary-foreground dark:bg-primary/60 dark:text-primary-foreground'
+                                        : 'text-primary'
                                 }`}
                                 onClick={() => setFilter(cat.name)}
                             >

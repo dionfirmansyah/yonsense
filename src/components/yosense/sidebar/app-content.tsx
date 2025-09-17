@@ -4,10 +4,9 @@ import * as React from 'react';
 
 import { SidebarInset } from '@/components/ui/sidebar';
 
-import { BadgeCheck, Bell, ChevronDown, CreditCard, LogOut, Search, Settings, Sparkles } from 'lucide-react';
+import { BadgeCheck, Bell, ChevronDown, CreditCard, LogOut, Search, Sparkles } from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Button } from '@/components/ui/button';
 import {
     DropdownMenu,
     DropdownMenuContent,
@@ -24,8 +23,8 @@ import { NotificationBell } from '@/components/yosense/notification-bell';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { cn, createInitial } from '@/lib/utils';
-import { toast } from 'sonner';
 import { useAuth } from '../auth/AuthProvider';
+import { ThemesToggle } from '../themes-toggle';
 import AppLogo from './app-logo';
 
 export default function AppContent({ children, className }: React.ComponentProps<'div'>) {
@@ -117,19 +116,16 @@ export default function AppContent({ children, className }: React.ComponentProps
                 </div>
 
                 <div className="flex items-center gap-2 px-4">
-                    <NotificationBell />
                     {!isMobile && (
                         <>
                             <div className="relative">
                                 <Search className="text-muted-foreground absolute top-1/2 left-2 h-4 w-4 -translate-y-1/2" />
                                 <Input type="text" placeholder="Search..." className="pl-8" />
                             </div>
-                            <Button className="items-center" onClick={() => toast.info('Coming Soon 😁')}>
-                                Settings
-                                <Settings />
-                            </Button>
                         </>
                     )}
+                    <NotificationBell />
+                    <ThemesToggle />
                 </div>
             </header>
             <div className={cn('flex flex-col gap-2 p-2', className)}>{children}</div>

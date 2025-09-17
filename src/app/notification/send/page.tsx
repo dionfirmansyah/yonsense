@@ -238,8 +238,8 @@ export default function TemplatePage({}: PageProps) {
                 <div className="space-y-6 p-6">
                     {/* Page Header */}
                     <div className="border-b pb-4">
-                        <h1 className="text-2xl font-bold text-gray-900">Kirim Notifikasi</h1>
-                        <p className="mt-1 text-gray-600">
+                        <h1 className="text-2xl font-bold">Kirim Notifikasi</h1>
+                        <p className="mt-1 text-base">
                             Pilih template dan target pengguna untuk mengirim notifikasi push
                         </p>
                     </div>
@@ -265,7 +265,7 @@ export default function TemplatePage({}: PageProps) {
                     {/* Target Mode Selection */}
 
                     <div className="mb-4">
-                        <h3 className="mb-3 font-medium text-gray-900">Pilih Target</h3>
+                        <h3 className="mb-3 font-medium">Pilih Target</h3>
                         <div className="flex gap-3">
                             <button
                                 onClick={() => handleTargetModeChange('individual')}

@@ -1,6 +1,7 @@
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/components/yosense/auth/AuthProvider';
 
+import { ThemeProvider } from '@/components/yosense/themes-provider';
 import './globals.css';
 
 export const MetaData = {
@@ -16,10 +17,22 @@ export const MetaData = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
     return (
         <html lang="en" suppressHydrationWarning={true}>
-            <body suppressHydrationWarning={true} className={'bg-background min-h-screen font-sans antialiased'}>
+            <body className={'bg-background min-h-screen font-sans antialiased'}>
                 <AuthProvider>
-                    <main className="flex-1">{children}</main>
-                    <Toaster richColors position="top-center" />
+                    <ThemeProvider
+                        attribute="class"
+                        value={{
+                            light: 'light',
+                            dark: 'dark',
+                            retro: 'retro',
+                        }}
+                        defaultTheme="light"
+                        enableSystem
+                        disableTransitionOnChange
+                    >
+                        <main className="flex-1">{children}</main>
+                        <Toaster richColors position="top-center" />
+                    </ThemeProvider>
                 </AuthProvider>
             </body>
         </html>

@@ -2,13 +2,13 @@
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Button } from '@/components/ui/button';
+import { Checkbox } from '@/components/ui/checkbox';
 import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
 import { createInitial } from '@/lib/utils';
-import { useMemo, useState } from 'react';
-
 import { Search, Send, Users } from 'lucide-react';
+import { useMemo, useState } from 'react';
 
 interface UserTableProps {
     selectedUsers: string[];
@@ -49,17 +49,17 @@ export default function UserTable({
     const paginatedUsers = filteredUsers.slice((page - 1) * pageSize, page * pageSize);
 
     return (
-        <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+        <div className="border-border bg-background overflow-hidden rounded-xl border shadow-sm">
             {/* Header */}
-            <div className="flex flex-col gap-4 border-b border-gray-200 px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
-                <h2 className="flex items-center gap-2 text-lg font-semibold text-gray-900">
+            <div className="border-border flex flex-col gap-4 border-b px-6 py-4 sm:flex-row sm:items-center sm:justify-between">
+                <h2 className="text-foreground flex items-center gap-2 text-lg font-semibold">
                     <Users className="h-5 w-5" />
                     Daftar User
                 </h2>
 
                 {/* Search */}
                 <div className="relative w-full sm:w-64">
-                    <Search className="absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2 text-gray-400" />
+                    <Search className="text-muted-foreground absolute top-1/2 left-3 h-4 w-4 -translate-y-1/2" />
                     <Input
                         type="text"
                         placeholder="Cari user..."
@@ -68,7 +68,7 @@ export default function UserTable({
                             setSearch(e.target.value);
                             setPage(1); // reset ke halaman 1 saat search berubah
                         }}
-                        className="border-border pl-9"
+                        className="pl-9"
                     />
                 </div>
             </div>
@@ -76,24 +76,23 @@ export default function UserTable({
             {/* Table */}
             <div className="overflow-x-auto">
                 <table className="w-full text-sm">
-                    <thead className="bg-gray-50 text-left text-gray-600">
+                    <thead className="text-left">
                         <tr>
                             <th className="px-6 py-3">
-                                <input
-                                    type="checkbox"
+                                <Checkbox
                                     checked={
                                         selectedUsers.length === paginatedUsers.length && paginatedUsers.length > 0
                                     }
-                                    onChange={handleSelectAll}
-                                    className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                    onCheckedChange={handleSelectAll}
+                                    className="border-primary border"
                                     aria-label="Pilih semua pengguna"
                                 />
                             </th>
-                            <th className="px-6 py-3 font-medium">Pengguna</th>
-                            <th className="px-6 py-3 text-center font-medium">Aksi</th>
+                            <th className="text-foreground px-6 py-3 font-medium">Pengguna</th>
+                            <th className="text-foreground px-6 py-3 text-center font-medium">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-gray-100">
+                    <tbody className="divide-border divide-y">
                         {isLoading &&
                             Array.from({ length: pageSize }).map((_, i) => (
                                 <tr key={i}>
@@ -117,47 +116,48 @@ export default function UserTable({
 
                         {!isLoading && paginatedUsers.length === 0 && (
                             <tr>
-                                <td colSpan={3} className="px-6 py-10 text-center text-gray-500">
+                                <td colSpan={3} className="text-muted-foreground px-6 py-10 text-center">
                                     Tidak ada user ditemukan.
                                 </td>
                             </tr>
                         )}
 
                         {paginatedUsers.map((user) => (
-                            <tr key={user.id} className="transition-colors hover:bg-blue-50/30">
+                            <tr key={user.id} className="hover:bg-muted/50 transition-colors">
                                 <td className="px-6 py-4">
-                                    <input
-                                        type="checkbox"
+                                    <Checkbox
                                         checked={selectedUsers.includes(user.userId)}
-                                        onChange={() => handleSelectUser(user.userId)}
-                                        className="rounded border-gray-300 text-blue-600 focus:ring-blue-500"
+                                        onCheckedChange={() => handleSelectUser(user.userId)}
+                                        className="border-primary border"
                                         aria-label={`Pilih ${user.displayName}`}
                                     />
                                 </td>
                                 <td className="px-6 py-4">
                                     <div className="flex items-center gap-3">
-                                        <Avatar className="h-9 w-9 rounded-full ring-2 ring-gray-100">
+                                        <Avatar className="ring-border h-9 w-9 rounded-full ring-1">
                                             <AvatarImage src={user.picture} alt={user.displayName} />
-                                            <AvatarFallback className="rounded-full bg-gray-200 text-xs font-medium text-gray-600">
+                                            <AvatarFallback className="bg-muted text-foreground rounded-full text-xs font-medium">
                                                 {createInitial(user.displayName)}
                                             </AvatarFallback>
                                         </Avatar>
                                         <div className="min-w-0">
-                                            <div className="truncate font-medium text-gray-900">{user.displayName}</div>
-                                            <div className="truncate text-xs text-gray-500">{user.email}</div>
+                                            <div className="text-foreground truncate font-medium">
+                                                {user.displayName}
+                                            </div>
+                                            <div className="text-muted-foreground truncate text-xs">{user.email}</div>
                                         </div>
                                     </div>
                                 </td>
                                 <td className="px-6 py-4 text-center">
-                                    <button
-                                        type="button"
+                                    <Button
+                                        size="icon"
+                                        variant="ghost"
                                         onClick={() => handleSendToSingle(user.userId)}
                                         disabled={isLoading || !isFormValid}
-                                        className="rounded-lg p-2 text-blue-600 transition-colors hover:bg-blue-100 focus:ring-2 focus:ring-blue-500 focus:outline-none disabled:cursor-not-allowed disabled:text-gray-400"
                                         title={`Kirim notifikasi ke ${user.displayName}`}
                                     >
                                         <Send className="h-4 w-4" />
-                                    </button>
+                                    </Button>
                                 </td>
                             </tr>
                         ))}
@@ -167,7 +167,7 @@ export default function UserTable({
 
             {/* Pagination */}
             {!isLoading && filteredUsers.length > pageSize && (
-                <div className="flex items-center justify-between border-t border-gray-200 px-6 py-4 text-sm text-gray-600">
+                <div className="border-border text-muted-foreground flex items-center justify-between border-t px-6 py-4 text-sm">
                     <span>
                         Halaman {page} dari {totalPages}
                     </span>

@@ -183,13 +183,13 @@ export default function NotificationTemplateCard({
 
     const renderNotificationPreview = useCallback(
         () => (
-            <div className="rounded-lg border bg-gray-50 p-3 sm:p-4">
-                <h3 className="mb-3 text-sm font-medium text-gray-900 sm:text-base">Preview Notifikasi</h3>
+            <div className="rounded-lg border p-3 sm:p-4">
+                <h3 className="mb-3 text-sm font-medium sm:text-base">Preview Notifikasi</h3>
                 <div className="bg-background rounded-lg border p-3 shadow-sm sm:p-4">
                     <div className="flex items-start space-x-2 sm:space-x-3">
                         <div className="flex w-full items-center justify-between">
                             <div className="flex min-w-0 flex-1 flex-col items-start">
-                                <p className="w-full truncate text-sm font-medium text-gray-900 sm:text-base">
+                                <p className="w-full truncate text-sm font-medium sm:text-base">
                                     {notification.title.trim() || 'Judul Notifikasi'}
                                 </p>
                                 <p className="mt-1 mb-2 line-clamp-2 text-xs text-gray-600 sm:text-sm">
@@ -293,7 +293,7 @@ export default function NotificationTemplateCard({
 
                                     {/* Template Content */}
                                     <div className="space-y-1.5 sm:space-y-2">
-                                        <h4 className="line-clamp-2 text-sm font-medium text-gray-900 sm:text-base">
+                                        <h4 className="line-clamp-2 text-sm font-medium sm:text-base">
                                             {template.title}
                                         </h4>
                                         <p className="line-clamp-3 text-xs text-gray-600 sm:text-sm">{template.body}</p>
@@ -332,7 +332,7 @@ export default function NotificationTemplateCard({
                             {/* Add New Template Card */}
                             <div
                                 onClick={handleCreateNew}
-                                className="hover:text-primary flex min-h-[120px] cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-gray-300 bg-gray-50 p-4 text-gray-500 transition-all hover:border-blue-400 hover:shadow-md sm:min-h-[200px] sm:p-6"
+                                className="hover:text-primary flex min-h-[120px] cursor-pointer items-center justify-center rounded-xl border-2 border-dashed border-gray-300 p-4 text-gray-500 transition-all hover:border-blue-400 hover:shadow-md sm:min-h-[200px] sm:p-6"
                             >
                                 <div className="flex flex-col items-center text-center">
                                     <Button
@@ -350,9 +350,7 @@ export default function NotificationTemplateCard({
                         /* No Search Results */
                         <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center sm:p-12">
                             <Search className="mx-auto h-8 w-8 text-gray-400 sm:h-12 sm:w-12" />
-                            <h3 className="mt-3 text-sm font-medium text-gray-900 sm:mt-4">
-                                Tidak ada template yang cocok
-                            </h3>
+                            <h3 className="mt-3 text-sm font-medium sm:mt-4">Tidak ada template yang cocok</h3>
                             <p className="mt-1 text-xs text-gray-500 sm:mt-2 sm:text-sm">
                                 Coba ubah kata kunci pencarian atau{' '}
                                 <button onClick={clearSearch} className="text-primary hover:text-primary underline">
@@ -365,7 +363,7 @@ export default function NotificationTemplateCard({
             ) : (
                 /* No Templates */
                 <div className="rounded-lg border-2 border-dashed border-gray-300 p-6 text-center sm:p-12">
-                    <h3 className="mt-3 text-sm font-medium text-gray-900 sm:mt-4">Belum ada template</h3>
+                    <h3 className="mt-3 text-sm font-medium sm:mt-4">Belum ada template</h3>
                     <p className="mt-1 text-xs text-gray-500 sm:mt-2 sm:text-sm">
                         Belum ada template notifikasi yang tersedia.
                     </p>
