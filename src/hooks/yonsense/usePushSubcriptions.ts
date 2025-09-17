@@ -5,17 +5,26 @@ import { db } from '@/lib/db';
 
 import { registerServiceWorker, waitForServiceWorker } from '@/lib/serviceWorker';
 import { id } from '@instantdb/react';
-import { useCallback, useEffect, useState } from 'react';
+import { useRouter } from 'next/navigation';
+import { createContext, useCallback, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 
 type SwStatus = 'loading' | 'ready' | 'error' | 'missing';
+type SubscriptionContextType = {
+    isSubscribed: boolean | undefined;
+    setIsSubscribed: (value: boolean) => void;
+};
+
+const SubscriptionContext = createContext<SubscriptionContextType | undefined>(undefined);
 
 export function usePushSubcriptions() {
-    const [isSubscribed, setIsSubscribed] = useState(false);
+    const [isSubscribed, setIsSubscribed] = useState<boolean | undefined>(undefined);
     const [isLoading, setIsLoading] = useState(false);
     const [mounted, setMounted] = useState(false);
     const [isSupported, setIsSupported] = useState(false);
     const [swStatus, setSwStatus] = useState<SwStatus>('loading');
+
+    const router = useRouter();
 
     const { user, allProfiles } = useAuthUser();
 
@@ -227,9 +236,10 @@ export function usePushSubcriptions() {
         setIsLoading(true);
         try {
             if (isSubscribed) {
-                await unsubscribeFromPush();
-                setIsSubscribed(false);
-                toast.success('Notifications disabled');
+                // await unsubscribeFromPush();
+                // setIsSubscribed(false);
+                // toast.success('Notifications disabled');
+                router.push('/notification');
             } else {
                 await subscribeToPush();
                 setIsSubscribed(true);
@@ -243,6 +253,22 @@ export function usePushSubcriptions() {
     };
 
     /** --- Effects --- */
+
+    useEffect(() => {
+        const saved = localStorage.getItem('isSubscribed');
+        if (saved !== null) {
+            setIsSubscribed(saved === 'true');
+        } else {
+            setIsSubscribed(false); // default kalau belum ada
+        }
+    }, []);
+
+    useEffect(() => {
+        if (isSubscribed !== undefined) {
+            localStorage.setItem('isSubscribed', String(isSubscribed));
+        }
+    }, [isSubscribed]);
+
     useEffect(() => {
         setMounted(true);
         initializeServiceWorker();
