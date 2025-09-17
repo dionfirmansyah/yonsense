@@ -23,6 +23,30 @@ export const createDisplayName = (authUser: JWTPayload): string => {
     return fullName || 'User';
 };
 
+export const formatDate = (date: Date): string => {
+    const now = new Date();
+
+    const isSameDay =
+        date.getFullYear() === now.getFullYear() &&
+        date.getMonth() === now.getMonth() &&
+        date.getDate() === now.getDate();
+
+    if (isSameDay) {
+        return date.toLocaleTimeString('en-US', {
+            hour: '2-digit',
+            minute: '2-digit',
+            hour12: true,
+        });
+    }
+
+    const options: Intl.DateTimeFormatOptions =
+        date.getFullYear() === now.getFullYear()
+            ? { day: 'numeric', month: 'short' }
+            : { day: 'numeric', month: 'short', year: 'numeric' };
+
+    return date.toLocaleDateString('en-US', options);
+};
+
 export const createInitial = (displayName: string | undefined): string => {
     if (!displayName) return 'U';
     const initial = displayName
