@@ -12,6 +12,7 @@ export const MetaData = {
         apple: '/icons/apple-touch-icon.png',
         badge: 'badge-white.png',
     },
+    manifest: '/manifest.json',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
