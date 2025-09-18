@@ -9,7 +9,7 @@ export const MetaData = {
     icons: {
         icon: '/favicon.ico',
         shortcut: '/favicon-16x16.png',
-        apple: '/apple-touch-icon.png',
+        apple: '/icons/apple-touch-icon.png',
         badge: 'badge-white.png',
     },
 };
