@@ -1,11 +1,14 @@
 import type { NextConfig } from 'next';
 
 const withPWA = require('next-pwa')({
-    dest: 'public', // tempat generate service worker
-    register: true, // auto register service worker
-    skipWaiting: true, // langsung aktif service worker baru tanpa tunggu reload
-    swSrc: './src/config/service-worker.js',
-    disable: process.env.NODE_ENV === 'development', // matikan PWA saat dev
+    dest: 'public',
+    register: true,
+    skipWaiting: true,
+    disable: process.env.NODE_ENV === 'development',
+
+    // tambahkan ini
+    swSrc: 'src/config/service-worker.js',
+    mode: 'InjectManifest', // wajib kalau pakai custom sw
 });
 
 const nextConfig: NextConfig = {
