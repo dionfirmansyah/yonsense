@@ -1,5 +1,5 @@
 const fs = require('fs');
-const { pwaConfig } = require('../src/config');
+const { pwaConfig } = require('../src/config/index.ts');
 
 const manifestPath = './public/manifest.json';
 

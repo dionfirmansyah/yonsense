@@ -48,7 +48,7 @@ const LoginCard: React.FC<LoginCardProps> = ({ onSuccess, onError, nonce }) => {
 
                 {/* Login Section */}
                 <div className="space-y-6">
-                    <div className="flex items-center justify-center space-x-2 rounded-lg bg-green-50 px-4 py-2 text-sm">
+                    <div className="flex items-center justify-center space-x-2 rounded-lg border border-green-700 bg-green-700/10 px-4 py-2 text-sm">
                         <Shield className="h-4 w-4 text-green-600" />
                         <span className="text-center font-medium text-green-700">
                             Login aman dengan enkripsi end-to-end
@@ -66,9 +66,11 @@ const LoginCard: React.FC<LoginCardProps> = ({ onSuccess, onError, nonce }) => {
                                 onSuccess={handleSuccess}
                                 onError={handleError}
                                 useOneTap={false}
+                                containerProps={{ className: ' rounded-full' }}
                                 size="large"
                                 width={280}
                                 logo_alignment="left"
+                                theme="outline"
                             />
                         </div>
                     </div>
@@ -81,7 +83,7 @@ const LoginCard: React.FC<LoginCardProps> = ({ onSuccess, onError, nonce }) => {
                     )}
 
                     {/* Privacy */}
-                    <div className="mt-6 rounded-lg bg-gray-50 p-4 text-center">
+                    <div className="mt-6 rounded-lg p-4 text-center">
                         <p className="text-xs leading-relaxed text-gray-500">
                             Dengan masuk, Anda menyetujui{' '}
                             <button className="font-medium text-blue-600 underline underline-offset-2 hover:text-blue-800">
