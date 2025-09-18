@@ -12,9 +12,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 export function ThemesToggle() {
-    const { setTheme, themes, theme } = useTheme();
-    console.log('tema', theme);
-
+    const { setTheme } = useTheme();
     return (
         <DropdownMenu>
             <DropdownMenuTrigger asChild>

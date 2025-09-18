@@ -60,8 +60,6 @@ export async function POST(req: NextRequest) {
                 tag,
             } = body as PushDataMultiple;
 
-            console.log('Kategory', category);
-
             if (!title || !message || !userIds || userIds.length === 0) {
                 return NextResponse.json({ error: 'Missing required fields: title, body, userIds' }, { status: 400 });
             }
