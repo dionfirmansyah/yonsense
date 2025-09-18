@@ -3,7 +3,7 @@ export const pwaConfig = {
     short_name: 'Yonsense',
     description: 'Starter template Next.js PWA dengan next-pwa',
     start_url: '/',
-    display: 'standalone',
+    display: 'fullscreen',
     background_color: '#ffffff',
     theme_color: '#000000',
     icons: [
