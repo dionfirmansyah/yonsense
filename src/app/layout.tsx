@@ -4,15 +4,18 @@ import { AuthProvider } from '@/components/yosense/auth/AuthProvider';
 import { ThemeProvider } from '@/components/yosense/themes-provider';
 import './globals.css';
 
-export const MetaData = {
+import type { Metadata } from 'next';
+
+export const metadata: Metadata = {
     title: 'Yonsense',
+    description: 'Simple Next.js PWA',
+    manifest: '/manifest.json',
+    themeColor: '#000000',
     icons: {
         icon: '/favicon.ico',
         shortcut: '/favicon-16x16.png',
         apple: '/icons/apple-touch-icon.png',
-        badge: 'badge-white.png',
     },
-    manifest: '/manifest.json',
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
