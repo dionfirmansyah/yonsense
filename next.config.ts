@@ -8,7 +8,8 @@ const withPWA = require('next-pwa')({
 
     // tambahkan ini
     swSrc: 'src/config/service-worker.js',
-    mode: 'InjectManifest', // wajib kalau pakai custom sw
+    mode: 'InjectManifest',
+    buildExcludes: [/app-build-manifest\.json$/],
 });
 
 const nextConfig: NextConfig = {
