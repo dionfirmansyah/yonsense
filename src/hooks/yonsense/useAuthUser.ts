@@ -53,15 +53,33 @@ export const useAuthUser = () => {
 
     const addNewUserProfile = useCallback(
         async (authUser: JWTPayload, userId: string) => {
-            await db.transact([
-                db.tx.profiles[id()].create({
-                    displayName: createDisplayName(authUser),
-                    picture: authUser.picture || '',
-                    email: authUser.email,
-                    userId,
-                    createdAt: timestamp,
-                }),
-            ]);
+            try {
+                const profileId = id();
+                const roleId = id();
+
+                await db.transact([
+                    // create profile
+                    db.tx.profiles[profileId]
+                        .create({
+                            displayName: createDisplayName(authUser),
+                            picture: authUser.picture || '',
+                            email: authUser.email,
+                            userId,
+                            createdAt: timestamp,
+                        })
+                        .link({ user: userId }),
+
+                    // create role
+                    db.tx.roles[roleId]
+                        .create({
+                            type: 'user',
+                        })
+                        .link({ users: userId }),
+                ]);
+            } catch (error) {
+                console.error('Failed to add new user profile:', error);
+                throw new Error('Profile creation failed');
+            }
         },
         [timestamp],
     );

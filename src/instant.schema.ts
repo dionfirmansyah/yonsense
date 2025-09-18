@@ -11,6 +11,9 @@ const _schema = i.schema({
         $users: i.entity({
             email: i.string().unique().indexed().optional(),
         }),
+        roles: i.entity({
+            type: i.string(),
+        }),
         profiles: i.entity({
             email: i.string().unique().indexed().optional(),
             displayName: i.string().optional(),
@@ -78,6 +81,10 @@ const _schema = i.schema({
         userPushSubscriptions: {
             forward: { on: 'subscriptions', has: 'many', label: 'user' },
             reverse: { on: '$users', has: 'many', label: 'subscriptions' },
+        },
+        userRoles: {
+            forward: { on: 'roles', has: 'many', label: 'users' },
+            reverse: { on: '$users', has: 'one', label: 'role' },
         },
         userProfiles: {
             forward: { on: 'profiles', has: 'one', label: 'user' },

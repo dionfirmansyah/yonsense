@@ -207,6 +207,11 @@ export function usePushSubcriptions() {
 
     const unsubscribe = async () => {
         try {
+            if (process.env.NODE_ENV === 'development') {
+                console.log('[unsubscribe] skipped in development mode');
+                return;
+            }
+
             const registration = await waitForServiceWorker(5000);
             const sub = await registration.pushManager.getSubscription();
             const subscriptionId = subscriptions?.find((s) => s.endpoint === sub?.endpoint)?.id;

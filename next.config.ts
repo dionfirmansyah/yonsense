@@ -5,8 +5,6 @@ const withPWA = require('next-pwa')({
     register: true,
     skipWaiting: true,
     disable: process.env.NODE_ENV === 'development',
-
-    // tambahkan ini
     swSrc: 'src/config/service-worker.js',
     mode: 'InjectManifest',
     buildExcludes: [/app-build-manifest\.json$/],
