@@ -4,7 +4,7 @@ import { AuthProvider } from '@/components/yosense/auth/AuthProvider';
 import { ThemeProvider } from '@/components/yosense/themes-provider';
 import './globals.css';
 
-import InstallPrompt from '@/components/yosense/install-prompt';
+import InstallBanner from '@/components/yosense/installer-banner';
 import type { Metadata } from 'next';
 
 export const metadata: Metadata = {
@@ -37,7 +37,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
                     >
                         <main className="flex-1">{children}</main>
                         <Toaster richColors position="top-center" />
-                        <InstallPrompt />
+                        <InstallBanner />
                     </ThemeProvider>
                 </AuthProvider>
             </body>
