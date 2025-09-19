@@ -259,8 +259,8 @@ export default function NotificationTemplateCard({
                                     {/* Selection Indicator */}
                                     {selectedTemplateId === template.id && (
                                         <>
-                                            <div className="bg-primary absolute -top-2 -left-2 flex h-5 w-5 items-center justify-center rounded-full shadow-sm sm:h-6 sm:w-6">
-                                                <Check className="h-2.5 w-2.5 text-white sm:h-3 sm:w-3" />
+                                            <div className="bg-background border-primary absolute -top-2 -left-2 flex h-5 w-5 items-center justify-center rounded-full border shadow-sm sm:h-6 sm:w-6">
+                                                <Check className="text-primary h-2.5 w-2.5 sm:h-3 sm:w-3" />
                                             </div>
                                             <button
                                                 onClick={(e) => {

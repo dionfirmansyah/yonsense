@@ -20,12 +20,13 @@ export function NavNotification({
 }: {
     items: {
         title: string;
-        url: string;
+        url?: string;
         icon?: LucideIcon;
         isActive?: boolean;
         items?: {
             title: string;
             url: string;
+            isActive?: boolean;
         }[];
     }[];
 }) {
@@ -47,7 +48,10 @@ export function NavNotification({
                                 <SidebarMenuSub>
                                     {item.items?.map((subItem) => (
                                         <SidebarMenuSubItem key={subItem.title}>
-                                            <SidebarMenuSubButton asChild>
+                                            <SidebarMenuSubButton
+                                                asChild
+                                                className={subItem.isActive ? 'bg-accent' : ''}
+                                            >
                                                 <Link href={subItem.url}>
                                                     <span>{subItem.title}</span>
                                                 </Link>

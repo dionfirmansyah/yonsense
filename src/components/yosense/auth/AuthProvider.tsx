@@ -26,7 +26,7 @@ export const useAuth = (): AuthContextType => {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     const [nonce] = useState(generateNonce);
 
-    const { updateProfile, addNewUserProfile, allProfiles, user } = useAuthUser();
+    const { updateProfile, addNewUserProfile, currentProfile } = useAuthUser();
 
     const { unsubscribe } = usePushSubcriptions();
 
@@ -38,21 +38,22 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                     return;
                 }
 
-                const userTarget = allProfiles?.find((u) => u.email === authUser.email);
-
-                if (userTarget) {
-                    if (authUser.picture !== userTarget.picture) {
+                // Cek profil pengguna saat ini yang didapat dari hook useAuthUser
+                if (currentProfile) {
+                    if (authUser.picture !== currentProfile.picture) {
                         await updateProfile({ picture: authUser.picture });
                     }
                     return;
                 }
 
+                // Jika tidak ada profil, buat yang baru
                 await addNewUserProfile(authUser, userId);
             } catch (error) {
                 console.error('Failed to sync user profile:', error);
+                toast.error('Gagal menyinkronkan profil pengguna.');
             }
         },
-        [allProfiles, updateProfile, addNewUserProfile, user],
+        [currentProfile, updateProfile, addNewUserProfile],
     );
 
     // Google Auth Handlers

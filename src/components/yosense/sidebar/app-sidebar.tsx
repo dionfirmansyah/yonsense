@@ -2,7 +2,19 @@
 
 import * as React from 'react';
 
-import { BadgeCheck, Bell, ChevronDown, CreditCard, LogOut, Sparkles } from 'lucide-react';
+import {
+    BadgeCheck,
+    Bell,
+    ChevronDown,
+    CreditCard,
+    Frame,
+    Home,
+    LogOut,
+    Map,
+    PieChart,
+    Settings,
+    Sparkles,
+} from 'lucide-react';
 
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -18,12 +30,11 @@ import { SidebarMenuButton } from '@/components/ui/sidebar';
 import { createInitial } from '@/lib/utils';
 import AppLogo from './app-logo';
 
-import { Frame, Map, PieChart } from 'lucide-react';
-
 import { Sidebar, SidebarContent, SidebarFooter, SidebarHeader, SidebarRail } from '@/components/ui/sidebar';
 import { NavNotification } from '@/components/yosense/sidebar/nav-notification';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useAuthUser } from '@/hooks/yonsense/useAuthUser';
+import { usePathname } from 'next/navigation';
 import { useAuth } from '../auth/AuthProvider';
 
 // This is sample data.
@@ -45,9 +56,11 @@ const data = {
                     title: 'Your Notifications',
                     url: '/notification',
                 },
+
                 {
                     title: 'Send Notification',
                     url: '/notification/send',
+                    isAdmin: true,
                 },
             ],
         },
@@ -73,16 +86,60 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     const isMobile = useIsMobile();
-    const { currentProfile } = useAuthUser();
+    const { currentProfile, role } = useAuthUser();
     const { logout } = useAuth();
+    const pathname = usePathname();
+
+    const filteredMenuItems = React.useMemo(() => {
+        const menuItems = [
+            {
+                title: 'Home',
+                icon: Home,
+                url: '/',
+                isActive: pathname === '/',
+            },
+            {
+                title: 'Notification',
+                icon: Bell,
+                isActive: pathname.includes('/notification'),
+                items: [
+                    {
+                        title: 'Send Notification',
+                        url: '/notification/send',
+                        isAdmin: true,
+                        isActive: pathname.match('/notification/send'),
+                    },
+                ],
+            },
+            {
+                title: 'Settings',
+                icon: Settings,
+                url: '/settings',
+                isActive: pathname.startsWith('/settings'),
+            },
+        ];
+
+        return menuItems
+            .map((item) => {
+                if (!item.items) {
+                    return item;
+                }
+                const filteredSubItems = item.items.filter(
+                    (subItem) => !subItem.isAdmin || (subItem.isAdmin && role === 'admin'),
+                );
+                return { ...item, items: filteredSubItems };
+            })
+            .filter((item) => !item.items || item.items.length > 0);
+    }, [pathname, role]);
+
     return (
         <Sidebar collapsible="icon" {...props}>
             <SidebarHeader>
                 <AppLogo />
             </SidebarHeader>
             <SidebarContent>
-                <NavNotification items={data.navNotification} />
-                {/* <NavProjects projects={data.projects} /> */}
+                {/* <NavMain items={filteredMenuItems.filter((i) => !i.items)} /> */}
+                <NavNotification items={filteredMenuItems.filter((i) => i.items)} />
             </SidebarContent>
             <SidebarFooter>
                 {isMobile && (

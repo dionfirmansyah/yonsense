@@ -37,7 +37,7 @@ const INITIAL_NOTIFICATION_STATE: NotificationData = {
 };
 
 export default function TemplatePage({}: PageProps) {
-    const { allProfiles, user } = useAuthUser();
+    const { allProfiles, user, role } = useAuthUser();
     const searchParams = useSearchParams();
     const mode = searchParams.get('mode');
     const params = new URLSearchParams(searchParams.toString());
@@ -230,6 +230,14 @@ export default function TemplatePage({}: PageProps) {
             setSelectedSegments([]);
         }
     }, []);
+
+    if (role !== 'admin') {
+        return <div>Anda tidak memiliki izin untuk mengirim notifikasi</div>;
+    }
+
+    if (isLoading) {
+        return <div>Loading...</div>;
+    }
 
     return (
         <SidebarProvider>

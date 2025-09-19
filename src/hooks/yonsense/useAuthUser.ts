@@ -25,10 +25,18 @@ export const useAuthUser = () => {
                 limit: 1,
             },
         },
+        $users: {
+            role: {
+                $: {
+                    fields: ['type'],
+                },
+            },
+        },
     });
 
     const currentProfile = useMemo(() => CurrentProfile?.profiles?.[0], [CurrentProfile?.profiles]);
     const allProfiles = useMemo(() => AllProfiles?.profiles, [AllProfiles?.profiles]);
+    const role = useMemo(() => CurrentProfile?.$users?.[0]?.role?.type, [CurrentProfile]);
 
     const updateProfile = useCallback(
         async (updates: ProfileUpdate): Promise<void> => {
@@ -88,6 +96,7 @@ export const useAuthUser = () => {
         user,
         currentProfile,
         allProfiles,
+        role,
         isLoading: isLoadingAllProfiles || isLoadingCurrentProfile,
         error: errorAllProfiles || errorCurrentProfile,
         updateProfile,
